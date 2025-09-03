@@ -1,8 +1,9 @@
 package Entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "answer") // optional
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,12 @@
-Entity\Question.class
 Dao\QuestionDao.class
+Entity\Question.class
+Entity\Student.class
+Service\StudentService.class
 Entity\Answer.class
+Entity\User.class
+Service\ExamService.class
+Service\UserService.class
+Dao\UserDao.class
 orm\ormfirst\App.class
+Entity\Result.class
+Entity\Exam.class
