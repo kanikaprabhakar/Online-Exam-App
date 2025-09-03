@@ -11,6 +11,10 @@ public class Exam {
     private int examId;
     private String title;
     private int duration;
+    @Column(name = "enabled")
+    private boolean enabled;
+    @Column(name = "num_questions")
+    private int numQuestions;
 
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
     private List<Question> questions;
@@ -21,6 +25,10 @@ public class Exam {
     public void setTitle(String title) { this.title = title; }
     public int getDuration() { return duration; }
     public void setDuration(int duration) { this.duration = duration; }
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public int getNumQuestions() { return numQuestions; }
+    public void setNumQuestions(int numQuestions) { this.numQuestions = numQuestions; }
     public List<Question> getQuestions() { return questions; }
     public void setQuestions(List<Question> questions) { this.questions = questions; }
 }

@@ -1,9 +1,12 @@
 Dao\QuestionDao.class
+Dao\ExamDao.class
 Entity\Question.class
 Entity\Student.class
 Service\StudentService.class
 Entity\Answer.class
 Entity\User.class
+Entity\ExamAttempt.class
+Dao\ExamAttemptDao.class
 Service\ExamService.class
 Service\UserService.class
 Dao\UserDao.class

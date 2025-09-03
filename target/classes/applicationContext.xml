@@ -34,10 +34,18 @@
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <bean id="questionDao" class="Dao.QuestionDao">
-        <property name="hibernateTemplate">
-            <bean class="org.springframework.orm.hibernate5.HibernateTemplate">
-                <property name="sessionFactory" ref="sessionFactory"/>
-            </bean>
-        </property>
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="examDao" class="Dao.ExamDao">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="examAttemptDao" class="Dao.ExamAttemptDao">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+        <constructor-arg ref="sessionFactory"/>
     </bean>
 </beans>

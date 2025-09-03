@@ -29,7 +29,7 @@ public class Question {
     private String option4;
 
     @Column(name = "correct_answer")
-    private int correctAnswer; // 1-4 for options
+    private Integer correctAnswer; // 1-4 for options
 
     @ManyToOne
     @JoinColumn(name = "exam_id")
@@ -56,8 +56,8 @@ public class Question {
     public String getOption4() { return option4; }
     public void setOption4(String option4) { this.option4 = option4; }
 
-    public int getCorrectAnswer() { return correctAnswer; }
-    public void setCorrectAnswer(int correctAnswer) { this.correctAnswer = correctAnswer; }
+    public Integer getCorrectAnswer() { return correctAnswer; }
+    public void setCorrectAnswer(Integer correctAnswer) { this.correctAnswer = correctAnswer; }
 
     public Exam getExam() { return exam; }
     public void setExam(Exam exam) { this.exam = exam; }
