@@ -151,8 +151,9 @@ public class App {
                         } else if (userRole.equals("student")) {
                             System.out.println("\n--- Student Menu ---");
                             System.out.println("1. Take Exam");
-                            System.out.println("2. Logout");
-                            System.out.print("Select an option (1-2): ");
+                            System.out.println("2. View My Attempts");
+                            System.out.println("3. Logout");
+                            System.out.print("Select an option (1-3): ");
                             int studentChoice = sc.nextInt();
                             sc.nextLine();
                             if (studentChoice == 1) {
@@ -199,6 +200,21 @@ public class App {
                                     }
                                 }
                             } else if (studentChoice == 2) {
+                                // View student's own attempts
+                                Dao.ExamAttemptDao attemptDao = (Dao.ExamAttemptDao) context.getBean("examAttemptDao");
+                                List<Entity.ExamAttempt> attempts = attemptDao.getAllAttempts();
+                                System.out.println("\n--- My Exam Attempts ---");
+                                boolean found = false;
+                                for (Entity.ExamAttempt a : attempts) {
+                                    if (a.getStudentEmail().equalsIgnoreCase(email)) {
+                                        System.out.println("Score: " + a.getScore() + "/" + a.getTotalQuestions() + " | Time: " + a.getAttemptTime());
+                                        found = true;
+                                    }
+                                }
+                                if (!found) {
+                                    System.out.println("No attempts found for your account.");
+                                }
+                            } else if (studentChoice == 3) {
                                 sessionActive = false;
                                 System.out.println("Logged out.");
                             } else {
