@@ -2,10 +2,14 @@ package orm.ormfirst;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import Dao.QuestionDao;
+
 import Entity.Question;
 import Entity.Answer;
 import Entity.Exam;
+import orm.ormfirst.dao.ExamAttemptDao;
+import orm.ormfirst.dao.ExamDao;
+import orm.ormfirst.dao.QuestionDao;
+
 import java.util.*;
 
 public class App {
@@ -59,7 +63,7 @@ public class App {
                     while (sessionActive) {
                         if (userRole.equals("admin")) {
                             System.out.println("\n--- Admin Menu ---");
-                            Dao.ExamDao examDao = (Dao.ExamDao) context.getBean("examDao");
+                            ExamDao examDao = (ExamDao) context.getBean("examDao");
                             Exam exam = examDao.getCurrentExam();
                             if (exam != null && exam.isEnabled()) {
                                 System.out.println("Exam Status: ENABLED | Questions: " + exam.getNumQuestions());
@@ -75,7 +79,7 @@ public class App {
                             System.out.print("Select an option (1-6): ");
                             int adminChoice = sc.nextInt();
                             sc.nextLine();
-                            Dao.ExamAttemptDao attemptDao = (Dao.ExamAttemptDao) context.getBean("examAttemptDao");
+                            ExamAttemptDao attemptDao = (ExamAttemptDao) context.getBean("examAttemptDao");
                             switch (adminChoice) {
                                 case 1:
                                     System.out.println("\n--- Add Objective Question ---");
@@ -157,7 +161,7 @@ public class App {
                             int studentChoice = sc.nextInt();
                             sc.nextLine();
                             if (studentChoice == 1) {
-                                Dao.ExamDao examDao = (Dao.ExamDao) context.getBean("examDao");
+                                ExamDao examDao = (ExamDao) context.getBean("examDao");
                                 Exam exam = examDao.getCurrentExam();
                                 if (exam == null || !exam.isEnabled()) {
                                     System.out.println("No exam available. Please try later.");
@@ -190,7 +194,7 @@ public class App {
                                         }
                                         System.out.println("\nExam finished! Your score: " + score + "/" + questions.size());
                                         // Save exam attempt
-                                        Dao.ExamAttemptDao attemptDao = (Dao.ExamAttemptDao) context.getBean("examAttemptDao");
+                                        ExamAttemptDao attemptDao = (ExamAttemptDao) context.getBean("examAttemptDao");
                                         Entity.ExamAttempt attempt = new Entity.ExamAttempt();
                                         attempt.setStudentEmail(email);
                                         attempt.setScore(score);
@@ -201,7 +205,7 @@ public class App {
                                 }
                             } else if (studentChoice == 2) {
                                 // View student's own attempts
-                                Dao.ExamAttemptDao attemptDao = (Dao.ExamAttemptDao) context.getBean("examAttemptDao");
+                                ExamAttemptDao attemptDao = (ExamAttemptDao) context.getBean("examAttemptDao");
                                 List<Entity.ExamAttempt> attempts = attemptDao.getAllAttempts();
                                 System.out.println("\n--- My Exam Attempts ---");
                                 boolean found = false;

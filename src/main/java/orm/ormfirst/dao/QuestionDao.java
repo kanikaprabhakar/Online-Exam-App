@@ -1,23 +1,23 @@
-package Dao;
+package orm.ormfirst.dao;
 
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import Entity.ExamAttempt;
+import Entity.Question;
 import java.util.List;
 
 @Transactional
-public class ExamAttemptDao {
+public class QuestionDao {
     private HibernateTemplate hibernateTemplate;
 
     public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
         this.hibernateTemplate = hibernateTemplate;
     }
 
-    public void saveAttempt(ExamAttempt attempt) {
-        hibernateTemplate.save(attempt);
+    public void insert(Question q) {
+        hibernateTemplate.save(q);
     }
 
-    public List<ExamAttempt> getAllAttempts() {
-        return (List<ExamAttempt>) hibernateTemplate.loadAll(ExamAttempt.class);
+    public List<Question> getAllQuestions() {
+        return (List<Question>) hibernateTemplate.loadAll(Question.class);
     }
 }
