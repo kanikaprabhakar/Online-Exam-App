@@ -3,12 +3,13 @@ package orm.ormfirst.dao;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Repository;
-import Entity.Exam;
+
+import entity.Exam;
+
 import java.util.List;
 
 @Transactional
-@Repository
+//@Repository
 public class ExamDao {
     @Autowired
     private HibernateTemplate hibernateTemplate;

@@ -1,4 +1,4 @@
-package Entity;
+package entity;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +13,7 @@ public class Question {
     private String question;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<Answer> answers;
+    private java.util.List<Answer> answers;
 
     // Objective question fields
     @Column(name = "option1")

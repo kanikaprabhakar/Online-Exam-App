@@ -1,9 +1,10 @@
 package Service;
 
-import Entity.Exam;
-import Entity.Result;
-import Entity.Student;
 import java.util.*;
+
+import entity.Exam;
+import entity.Result;
+import entity.Student;
 
 public class StudentService {
     // Add methods for student actions

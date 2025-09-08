@@ -3,9 +3,9 @@ package orm.ormfirst;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import Entity.Question;
-import Entity.Answer;
-import Entity.Exam;
+import entity.Answer;
+import entity.Exam;
+import entity.Question;
 import orm.ormfirst.dao.ExamAttemptDao;
 import orm.ormfirst.dao.ExamDao;
 import orm.ormfirst.dao.QuestionDao;
@@ -109,7 +109,7 @@ public class App {
                                     break;
                                 case 2:
                                     if (exam == null) {
-                                        exam = new Entity.Exam();
+                                        exam = new entity.Exam();
                                         exam.setTitle("Main Exam");
                                         exam.setDuration(60);
                                     }
@@ -135,11 +135,11 @@ public class App {
                                     break;
                                 case 5:
                                     System.out.println("\n--- Exam Attempt History ---");
-                                    List<Entity.ExamAttempt> attempts = attemptDao.getAllAttempts();
+                                    List<entity.ExamAttempt> attempts = attemptDao.getAllAttempts();
                                     if (attempts.isEmpty()) {
                                         System.out.println("No exam attempts found.");
                                     } else {
-                                        for (Entity.ExamAttempt a : attempts) {
+                                        for (entity.ExamAttempt a : attempts) {
                                             System.out.println("Student: " + a.getStudentEmail() + " | Score: " + a.getScore() + "/" + a.getTotalQuestions() + " | Time: " + a.getAttemptTime());
                                         }
                                     }
@@ -195,7 +195,7 @@ public class App {
                                         System.out.println("\nExam finished! Your score: " + score + "/" + questions.size());
                                         // Save exam attempt
                                         ExamAttemptDao attemptDao = (ExamAttemptDao) context.getBean("examAttemptDao");
-                                        Entity.ExamAttempt attempt = new Entity.ExamAttempt();
+                                        entity.ExamAttempt attempt = new entity.ExamAttempt();
                                         attempt.setStudentEmail(email);
                                         attempt.setScore(score);
                                         attempt.setTotalQuestions(questions.size());
@@ -206,10 +206,10 @@ public class App {
                             } else if (studentChoice == 2) {
                                 // View student's own attempts
                                 ExamAttemptDao attemptDao = (ExamAttemptDao) context.getBean("examAttemptDao");
-                                List<Entity.ExamAttempt> attempts = attemptDao.getAllAttempts();
+                                List<entity.ExamAttempt> attempts = attemptDao.getAllAttempts();
                                 System.out.println("\n--- My Exam Attempts ---");
                                 boolean found = false;
-                                for (Entity.ExamAttempt a : attempts) {
+                                for (entity.ExamAttempt a : attempts) {
                                     if (a.getStudentEmail().equalsIgnoreCase(email)) {
                                         System.out.println("Score: " + a.getScore() + "/" + a.getTotalQuestions() + " | Time: " + a.getAttemptTime());
                                         found = true;

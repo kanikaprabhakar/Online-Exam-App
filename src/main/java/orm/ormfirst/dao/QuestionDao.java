@@ -1,10 +1,14 @@
 package orm.ormfirst.dao;
 
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import Entity.Question;
+
+import entity.Question;
+
 import java.util.List;
 
+//@Repository
 @Transactional
 public class QuestionDao {
     private HibernateTemplate hibernateTemplate;
@@ -19,5 +23,9 @@ public class QuestionDao {
 
     public List<Question> getAllQuestions() {
         return (List<Question>) hibernateTemplate.loadAll(Question.class);
+    }
+
+    public void delete(Question q) {
+        hibernateTemplate.delete(q);
     }
 }

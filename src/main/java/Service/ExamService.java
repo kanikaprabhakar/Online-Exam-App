@@ -1,9 +1,10 @@
 package Service;
 
-import Entity.Exam;
-import Entity.Question;
-import Entity.Answer;
 import java.util.*;
+
+import entity.Answer;
+import entity.Exam;
+import entity.Question;
 
 public class ExamService {
     // Add methods for admin to add exams, questions, answers

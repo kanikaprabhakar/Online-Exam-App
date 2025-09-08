@@ -1,14 +1,15 @@
-
 package Service;
 
-import orm.ormfirst.dao.UserDao;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import orm.ormfirst.repository.UserRepository;
+import org.springframework.stereotype.Service;
+import java.util.List;
 
+@Service
 public class UserService {
-    private UserDao userDao = new UserDao();
+    @Autowired
+    private UserRepository userRepository;
 
     public boolean register(String name, String email, String pass) {
         // Default to student role for backward compatibility
@@ -16,34 +17,26 @@ public class UserService {
     }
 
     public boolean registerWithRole(String name, String email, String pass, String role) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/EXAM_APP", "root", "root")) {
-            String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, name);
-            ps.setString(2, email);
-            ps.setString(3, pass);
-            ps.setString(4, role);
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(pass);
+        user.setRole(role);
+        userRepository.save(user);
+        return true;
     }
 
     public String getRoleByLogin(String email, String pass) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/EXAM_APP", "root", "root")) {
-            String sql = "SELECT role FROM users WHERE email=? AND password=?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email);
-            ps.setString(2, pass);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getString("role");
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email) && user.getPassword().equals(pass)) {
+                return user.getRole();
             }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        return null;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

@@ -1,4 +1,4 @@
-package Entity;
+package entity;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,7 +17,7 @@ public class Exam {
     private int numQuestions;
 
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
-    private List<Question> questions;
+    private java.util.List<Question> questions;
     // getters and setters
     public int getExamId() { return examId; }
     public void setExamId(int examId) { this.examId = examId; }

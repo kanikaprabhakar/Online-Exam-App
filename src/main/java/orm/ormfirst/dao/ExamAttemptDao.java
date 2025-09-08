@@ -1,27 +1,34 @@
 package orm.ormfirst.dao;
 
-import org.springframework.orm.hibernate5.HibernateTemplate;
+import orm.ormfirst.repository.ExamAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Repository;
-import Entity.ExamAttempt;
+
+import entity.ExamAttempt;
+
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
-@Repository
+//@Repository
 public class ExamAttemptDao {
     @Autowired
-    private HibernateTemplate hibernateTemplate;
-
-    public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-        this.hibernateTemplate = hibernateTemplate;
-    }
+    private ExamAttemptRepository examAttemptRepository;
 
     public void saveAttempt(ExamAttempt attempt) {
-        hibernateTemplate.save(attempt);
+        examAttemptRepository.save(attempt);
     }
 
     public List<ExamAttempt> getAllAttempts() {
-        return (List<ExamAttempt>) hibernateTemplate.loadAll(ExamAttempt.class);
+        return (List<ExamAttempt>) examAttemptRepository.findAll();
+    }
+
+    public ExamAttempt getAttemptById(int id) {
+        Optional<ExamAttempt> attempt = examAttemptRepository.findById(id);
+        return attempt.orElse(null);
+    }
+
+    public void deleteAttempt(int id) {
+        examAttemptRepository.deleteById(id);
     }
 }
