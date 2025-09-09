@@ -2,6 +2,7 @@ package orm.ormfirst.controller;
 
 import entity.Question;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import orm.ormfirst.repository.QuestionRepository;
 
@@ -41,5 +42,12 @@ public class QuestionController {
     @DeleteMapping("/{id}")
     public void deleteQuestion(@PathVariable Integer id) {
         questionRepository.deleteById(id);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getQuestionById(@PathVariable Integer id) {
+        return questionRepository.findById(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

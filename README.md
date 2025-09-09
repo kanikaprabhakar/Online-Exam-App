@@ -47,27 +47,51 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
 - Admins can add questions, enable/disable exams, set question count, and view all attempts.
 - Students can take exams and view their own attempt history.
 
-## API Endpoints
+## API Endpoints & Example Request Bodies
 
-**Student Endpoints**
+### Student Registration
 
+- `POST /api/students/register-student`
+  - Example body:
+    ```json
+    {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "yourPassword",
+      "role": "student"
+    }
+    ```
+
+- `POST /api/students/register-admin`
+  - Example body:
+    ```json
+    {
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "password": "adminPassword",
+      "role": "admin"
+    }
+    ```
+
+### Other Student Endpoints
 - `GET /api/students` — List all students
 
-**Question Endpoints**
-
+### Question Endpoints
 - `GET /api/questions` — List all questions
 - `POST /api/questions` — Add a new question
 - `PUT /api/questions/{id}` — Update a question by ID
 - `DELETE /api/questions/{id}` — Delete a question by ID
+- `GET /api/questions/{id}` — Get a question by ID
 
-**Exam Attempt Endpoints**
-
+### Exam Attempt Endpoints
 - `GET /api/exam-attempts` — List all exam attempts
 - `GET /api/exam-attempts/{email}` — List exam attempts for a specific student email
 
-**Other Endpoints**
-
+### Other Endpoints
 - `GET /api/all-students` — List all students (admin view)
+- `GET /api/student/exam-questions` — Get randomized questions for students (no answers)
+- `GET /api/admin/questions` — Get all questions (with answers) for admin
+- `GET /api/exam-questions` — Get questions for the current enabled exam
 
 ## Project Structure
 

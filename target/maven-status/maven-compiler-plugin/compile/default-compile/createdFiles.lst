@@ -1,6 +1,8 @@
+orm\ormfirst\controller\ExamApiController$StudentQuestionDTO.class
 entity\Result.class
 entity\Question.class
 Service\StudentService.class
+orm\ormfirst\dto\ExamAttemptRequest.class
 orm\ormfirst\controller\QuestionController.class
 orm\ormfirst\dao\ExamDao.class
 orm\ormfirst\OnlineExamApp.class
@@ -10,6 +12,7 @@ entity\Exam.class
 entity\ExamAttempt.class
 orm\ormfirst\controller\StudentController.class
 orm\ormfirst\controller\ExamApiController.class
+orm\ormfirst\controller\StudentController$RegistrationRequest.class
 entity\Student.class
 orm\ormfirst\dao\ExamAttemptDao.class
 Service\ExamService.class
@@ -19,6 +22,7 @@ orm\ormfirst\repository\QuestionRepository.class
 orm\ormfirst\dao\UserDao.class
 orm\ormfirst\repository\ExamRepository.class
 orm\ormfirst\App.class
+orm\ormfirst\dto\AnswerSubmission.class
 entity\Answer.class
 orm\ormfirst\repository\UserRepository.class
 orm\ormfirst\repository\ExamAttemptRepository.class
