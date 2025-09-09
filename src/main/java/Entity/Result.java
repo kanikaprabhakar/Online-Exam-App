@@ -1,6 +1,7 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "result")
@@ -8,7 +9,8 @@ public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int resultId;
-    private int score;
+    @NotNull(message = "Score is required")
+    private Integer score;
 
     @ManyToOne
     @JoinColumn(name = "examId")

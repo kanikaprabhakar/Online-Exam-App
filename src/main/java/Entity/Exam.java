@@ -1,6 +1,10 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import java.util.List;
 
 @Entity
@@ -9,8 +13,12 @@ public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int examId;
+    @NotBlank(message = "Title is required")
+    @Size(min = 2, max = 100)
     private String title;
-    private int duration;
+
+    @NotNull(message = "Duration is required")
+    private Integer duration;
     @Column(name = "enabled")
     private boolean enabled;
     @Column(name = "num_questions")

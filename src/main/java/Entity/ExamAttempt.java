@@ -1,6 +1,10 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import java.util.Date;
 
 @Entity
@@ -10,9 +14,16 @@ public class ExamAttempt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "Student email is required")
+    @Email(message = "Email should be valid")
     private String studentEmail;
-    private int score;
-    private int totalQuestions;
+
+    @NotNull(message = "Score is required")
+    private Integer score;
+
+    @NotNull(message = "Total questions is required")
+    private Integer totalQuestions;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date attemptTime;
 

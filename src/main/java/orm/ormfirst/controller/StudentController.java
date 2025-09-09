@@ -1,9 +1,11 @@
 package orm.ormfirst.controller;
 
 import entity.User;
+import entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import orm.ormfirst.repository.UserRepository;
+import orm.ormfirst.repository.StudentRepository;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -15,12 +17,12 @@ import java.util.stream.Collectors;
 public class StudentController {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     @GetMapping("")
-    public List<User> getAllStudents() {
-        return userRepository.findAll().stream()
-            .filter(u -> "student".equalsIgnoreCase(u.getRole()))
-            .collect(Collectors.toList());
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
     }
 
     // DTO for registration
@@ -28,6 +30,9 @@ public class StudentController {
         public String name;
         public String email;
         public String password;
+        public String rollNumber;
+        public String phone;
+        public String address;
         public String role; // "admin" or "student"
     }
 
@@ -37,12 +42,13 @@ public class StudentController {
         if (!"student".equalsIgnoreCase(req.role)) {
             return ResponseEntity.badRequest().body(Map.of("error", "Role must be 'student'"));
         }
-        User user = new User();
-        user.setName(req.name);
-        user.setEmail(req.email);
-        user.setPassword(req.password);
-        user.setRole("student");
-        userRepository.save(user);
+        Student student = new Student();
+        student.setName(req.name);
+        student.setEmail(req.email);
+        student.setRollNumber(req.rollNumber);
+        student.setPhone(req.phone);
+        student.setAddress(req.address);
+        studentRepository.save(student);
         return ResponseEntity.ok(Map.of("message", "Student registered successfully"));
     }
 

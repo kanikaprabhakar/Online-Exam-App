@@ -1,6 +1,8 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "answer") // optional
@@ -9,6 +11,8 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "Answer text is required")
+    @Size(min = 1, max = 255)
     private String answer;
 
     @ManyToOne

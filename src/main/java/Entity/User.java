@@ -1,6 +1,9 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -8,9 +11,20 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 50)
     private String name;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, max = 100)
     private String password;
+
+    @NotBlank(message = "Role is required")
     private String role; // 'admin' or 'student'
 
     // getters and setters

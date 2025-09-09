@@ -1,6 +1,9 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 import java.util.List;
 
 @Entity
@@ -10,6 +13,8 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "Question text is required")
+    @Size(min = 5, max = 255)
     private String question;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
