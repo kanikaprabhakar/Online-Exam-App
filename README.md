@@ -83,9 +83,20 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
 - `DELETE /api/questions/{id}` — Delete a question by ID
 - `GET /api/questions/{id}` — Get a question by ID
 
+
 ### Exam Attempt Endpoints
-- `GET /api/exam-attempts` — List all exam attempts
-- `GET /api/exam-attempts/{email}` — List exam attempts for a specific student email
+- `POST /exam-attempts` — Add a new exam attempt (static info)
+  - Example body:
+    ```json
+    {
+      "studentEmail": "student@example.com",
+      "score": 8,
+      "totalQuestions": 10,
+      "attemptTime": "2025-09-09T10:30:00Z"
+    }
+    ```
+- `GET /exam-attempts` — List all exam attempts (admin)
+- `GET /exam-attempts/student/{email}` — List exam attempts for a specific student email
 
 ### Other Endpoints
 - `GET /api/all-students` — List all students (admin view)

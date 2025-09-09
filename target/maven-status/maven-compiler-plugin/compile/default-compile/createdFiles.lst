@@ -19,6 +19,7 @@ Service\ExamService.class
 entity\User.class
 orm\ormfirst\repository\StudentRepository.class
 orm\ormfirst\repository\QuestionRepository.class
+orm\ormfirst\controller\ExamAttemptController.class
 orm\ormfirst\dao\UserDao.class
 orm\ormfirst\repository\ExamRepository.class
 orm\ormfirst\App.class

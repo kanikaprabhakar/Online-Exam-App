@@ -12,9 +12,6 @@ public class Result {
     @NotNull(message = "Score is required")
     private Integer score;
 
-    @ManyToOne
-    @JoinColumn(name = "examId")
-    private Exam exam;
 
     @ManyToOne
     @JoinColumn(name = "studentId")
@@ -24,8 +21,6 @@ public class Result {
     public void setResultId(int resultId) { this.resultId = resultId; }
     public int getScore() { return score; }
     public void setScore(int score) { this.score = score; }
-    public Exam getExam() { return exam; }
-    public void setExam(Exam exam) { this.exam = exam; }
     public Student getStudent() { return student; }
     public void setStudent(Student student) { this.student = student; }
 }
