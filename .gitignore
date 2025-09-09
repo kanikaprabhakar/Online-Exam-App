@@ -1,0 +1,38 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database schema info
+schemainfo*
+
+# Others
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore zip files
+*.zip

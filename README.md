@@ -99,7 +99,6 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
 - `GET /exam-attempts/student/{email}` — List exam attempts for a specific student email
 
 ### Other Endpoints
-- `GET /api/all-students` — List all students (admin view)
 - `GET /api/student/exam-questions` — Get randomized questions for students (no answers)
 - `GET /api/admin/questions` — Get all questions (with answers) for admin
 - `GET /api/exam-questions` — Get questions for the current enabled exam
