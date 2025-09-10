@@ -6,6 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import orm.ormfirst.repository.QuestionRepository;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import orm.ormfirst.controller.QuestionLimitController;
+import java.util.Random;
+
 import java.util.List;
 
 @RestController
@@ -13,6 +17,25 @@ import java.util.List;
 public class QuestionController {
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private QuestionLimitController questionLimitController;
+    // Student endpoint: get random questions up to the current limit
+    @GetMapping("/student")
+    public List<Question> getStudentQuestions() {
+        List<Question> allQuestions = questionRepository.findAll();
+        int limit = questionLimitController.getCurrentLimit();
+        if (allQuestions.size() <= limit) {
+            return allQuestions;
+        }
+        // Randomly select 'limit' questions
+        Random rand = new Random();
+        return rand.ints(0, allQuestions.size())
+            .distinct()
+            .limit(limit)
+            .mapToObj(allQuestions::get)
+            .toList();
+    }
 
     @GetMapping("")
     public List<Question> getAllQuestions() {

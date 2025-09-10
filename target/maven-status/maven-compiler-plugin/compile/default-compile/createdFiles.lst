@@ -4,6 +4,7 @@ entity\Question.class
 Service\StudentService.class
 orm\ormfirst\dto\ExamAttemptRequest.class
 orm\ormfirst\controller\QuestionController.class
+orm\ormfirst\controller\QuestionLimitController.class
 orm\ormfirst\dao\ExamDao.class
 orm\ormfirst\OnlineExamApp.class
 Service\UserService.class
@@ -20,6 +21,7 @@ entity\User.class
 orm\ormfirst\repository\StudentRepository.class
 orm\ormfirst\repository\QuestionRepository.class
 orm\ormfirst\controller\ExamAttemptController.class
+orm\ormfirst\controller\QuestionLimitController$LimitRequest.class
 orm\ormfirst\dao\UserDao.class
 orm\ormfirst\repository\ExamRepository.class
 orm\ormfirst\App.class

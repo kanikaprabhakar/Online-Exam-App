@@ -100,26 +100,6 @@ public class ExamApiController {
         }
     }
 
-    // Student endpoint: Get questions (no answers)
-    @GetMapping("/student/exam-questions")
-    public List<StudentQuestionDTO> getStudentExamQuestions() {
-        Exam exam = examRepository.findAll().stream()
-            .filter(Exam::isEnabled)
-            .findFirst()
-            .orElse(null);
-        if (exam == null || exam.getNumQuestions() <= 0) {
-            return Collections.emptyList();
-        }
-        List<Question> allQuestions = questionRepository.findAll();
-        Collections.shuffle(allQuestions);
-        int numQ = Math.min(exam.getNumQuestions(), allQuestions.size());
-        List<Question> selected = allQuestions.subList(0, numQ);
-        List<StudentQuestionDTO> result = new java.util.ArrayList<>();
-        for (Question q : selected) {
-            result.add(new StudentQuestionDTO(q));
-        }
-        return result;
-    }
 
     // Admin endpoint: Get all questions (with answers)
     @GetMapping("/admin/questions")
@@ -127,20 +107,4 @@ public class ExamApiController {
         return questionRepository.findAll();
     }
 
-    // Endpoint: Get questions for current exam
-    @GetMapping("/exam-questions")
-    public List<Question> getExamQuestions() {
-        // Get the current enabled exam
-        Exam exam = examRepository.findAll().stream()
-            .filter(Exam::isEnabled)
-            .findFirst()
-            .orElse(null);
-        if (exam == null || exam.getNumQuestions() <= 0) {
-            return Collections.emptyList();
-        }
-        List<Question> allQuestions = questionRepository.findAll();
-        Collections.shuffle(allQuestions);
-        int numQ = Math.min(exam.getNumQuestions(), allQuestions.size());
-        return allQuestions.subList(0, numQ);
-    }
 }
