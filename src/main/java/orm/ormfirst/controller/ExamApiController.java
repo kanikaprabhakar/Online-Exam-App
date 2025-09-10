@@ -33,53 +33,9 @@ public class ExamApiController {
     @Autowired
     private ExamRepository examRepository;
 
-    // 1. View all exam attempts
-    @GetMapping("/exam-attempts")
-    public List<ExamAttempt> getAllExamAttempts() {
-        return examAttemptRepository.findAll();
-    }
 
-    // 2. List all students
-    @GetMapping("/all-students")
-    public List<User> getAllStudents() {
-        return userRepository.findAll().stream()
-                .filter(u -> "student".equalsIgnoreCase(u.getRole()))
-                .collect(Collectors.toList());
-    }
 
-    // 3. View personal exam attempts by email
-    @GetMapping("/exam-attempts/{email}")
-    public List<ExamAttempt> getExamAttemptsByEmail(@PathVariable String email) {
-        return examAttemptRepository.findAll().stream()
-                .filter(a -> a.getStudentEmail().equalsIgnoreCase(email))
-                .collect(Collectors.toList());
-    }
 
-    // Endpoint: Take Exam
-    @PostMapping("/exam-attempts/take")
-    public ResponseEntity<?> takeExam(@RequestBody ExamAttemptRequest request) {
-        int score = 0;
-        int totalQuestions = request.answers.size();
-        for (AnswerSubmission ans : request.answers) {
-            Question q = questionRepository.findById(ans.questionId).orElse(null);
-            if (q != null && q.getCorrectAnswer() != null && ans.selectedOption != null) {
-                if (q.getCorrectAnswer().equals(ans.selectedOption)) {
-                    score++;
-                }
-            }
-        }
-        ExamAttempt attempt = new ExamAttempt();
-        attempt.setStudentEmail(request.studentEmail);
-        attempt.setScore(score);
-        attempt.setTotalQuestions(totalQuestions);
-        attempt.setAttemptTime(new Date());
-        examAttemptRepository.save(attempt);
-        return ResponseEntity.ok(Map.of(
-            "score", score,
-            "totalQuestions", totalQuestions,
-            "attemptTime", attempt.getAttemptTime()
-        ));
-    }
 
 
     // DTO for student question view

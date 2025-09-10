@@ -105,8 +105,29 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
 - `GET /exam-attempts` — List all exam attempts (admin)
 - `GET /exam-attempts/student/{email}` — List exam attempts for a specific student email
 
-### Other Endpoints
-`GET /api/admin/questions` — Get all questions (with answers) for admin
+### Question Endpoints
+- `GET /api/questions/student` — Get random questions for student (limit applied)
+- `GET /api/questions` — List all questions
+- `POST /api/questions` — Add a new question
+- `PUT /api/questions/{id}` — Update a question by ID
+- `DELETE /api/questions/{id}` — Delete a question by ID
+- `GET /api/questions/{id}` — Get a question by ID
+
+### Student Endpoints
+- `GET /api/students` — List all students
+- `POST /api/students/register-student` — Register a student
+- `POST /api/students/register-admin` — Register an admin
+
+### Question Limit API (Admin)
+- `POST /api/admin/question-limit` — Set the number of questions students will see
+  - Example body:
+    ```json
+    { "limit": 5 }
+    ```
+- `GET /api/admin/question-limit` — Get the current question limit
+
+### Admin Endpoints
+- `GET /api/admin/questions` — Get all questions (with answers) for admin
 
 ## Project Structure
 
