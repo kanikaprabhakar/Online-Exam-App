@@ -1,3 +1,10 @@
+### Question Limit API (Admin)
+- `POST /api/admin/question-limit` — Set the number of questions students will see
+  - Example body:
+    ```json
+    { "limit": 5 }
+    ```
+- `GET /api/admin/question-limit` — Get the current question limit
 # Online Exam App
 
 A Spring Boot REST API for managing and taking online exams, with role-based access for admins and students.
