@@ -65,7 +65,10 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
       "name": "John Doe",
       "email": "john@example.com",
       "password": "yourPassword",
-      "role": "student"
+      "role": "student",
+      "rollNumber": "STU1001",
+      "phone": "9876543210",
+      "address": "123 Main Street, City"
     }
     ```
 

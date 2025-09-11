@@ -11,6 +11,7 @@ import orm.ormfirst.controller.QuestionLimitController;
 import java.util.Random;
 
 import java.util.List;
+import orm.ormfirst.dto.StudentQuestionDTO;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -22,18 +23,22 @@ public class QuestionController {
     private QuestionLimitController questionLimitController;
     // Student endpoint: get random questions up to the current limit
     @GetMapping("/student")
-    public List<Question> getStudentQuestions() {
+    public List<StudentQuestionDTO> getStudentQuestions() {
         List<Question> allQuestions = questionRepository.findAll();
         int limit = questionLimitController.getCurrentLimit();
+        List<Question> selected;
         if (allQuestions.size() <= limit) {
-            return allQuestions;
+            selected = allQuestions;
+        } else {
+            Random rand = new Random();
+            selected = rand.ints(0, allQuestions.size())
+                .distinct()
+                .limit(limit)
+                .mapToObj(allQuestions::get)
+                .toList();
         }
-        // Randomly select 'limit' questions
-        Random rand = new Random();
-        return rand.ints(0, allQuestions.size())
-            .distinct()
-            .limit(limit)
-            .mapToObj(allQuestions::get)
+        return selected.stream()
+            .map(StudentQuestionDTO::new)
             .toList();
     }
 

@@ -1,4 +1,5 @@
 orm\ormfirst\controller\ExamApiController$StudentQuestionDTO.class
+orm\ormfirst\dto\StudentQuestionDTO.class
 entity\Result.class
 entity\Question.class
 Service\StudentService.class
