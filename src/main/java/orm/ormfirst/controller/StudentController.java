@@ -1,28 +1,54 @@
 package orm.ormfirst.controller;
 
-import entity.User;
 import entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import orm.ormfirst.repository.UserRepository;
 import orm.ormfirst.repository.StudentRepository;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private StudentRepository studentRepository;
 
     @GetMapping("")
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> getStudentById(@PathVariable Integer id) {
+        return studentRepository.findById(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateStudent(@PathVariable Integer id, @RequestBody RegistrationRequest req) {
+        return studentRepository.findById(id)
+            .map(student -> {
+                student.setName(req.name);
+                student.setEmail(req.email);
+                student.setRollNumber(req.rollNumber);
+                student.setPhone(req.phone);
+                student.setAddress(req.address);
+                studentRepository.save(student);
+                return ResponseEntity.ok(Map.of("message", "Student updated successfully"));
+            })
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteStudent(@PathVariable Integer id) {
+        if (!studentRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        studentRepository.deleteById(id);
+        return ResponseEntity.ok(Map.of("message", "Student deleted successfully"));
     }
 
     // DTO for registration
@@ -52,18 +78,4 @@ public class StudentController {
         return ResponseEntity.ok(Map.of("message", "Student registered successfully"));
     }
 
-    // Admin registration
-    @PostMapping("/register-admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegistrationRequest req) {
-        if (!"admin".equalsIgnoreCase(req.role)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Role must be 'admin'"));
-        }
-        User user = new User();
-        user.setName(req.name);
-        user.setEmail(req.email);
-        user.setPassword(req.password);
-        user.setRole("admin");
-        userRepository.save(user);
-        return ResponseEntity.ok(Map.of("message", "Admin registered successfully"));
-    }
 }

@@ -116,10 +116,20 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
 - `DELETE /api/questions/{id}` — Delete a question by ID
 - `GET /api/questions/{id}` — Get a question by ID
 
-### Student Endpoints
+
+### Student CRUD Endpoints
 - `GET /api/students` — List all students
+- `GET /api/students/{id}` — Get a student by ID
 - `POST /api/students/register-student` — Register a student
+- `PUT /api/students/{id}` — Update a student by ID
+- `DELETE /api/students/{id}` — Delete a student by ID
+
+### Admin CRUD Endpoints
+- `GET /api/admin/users` — List all admin users
+- `GET /api/admin/users/{id}` — Get an admin user by ID
 - `POST /api/students/register-admin` — Register an admin
+- `PUT /api/admin/users/{id}` — Update an admin user by ID
+- `DELETE /api/admin/users/{id}` — Delete an admin user by ID
 
 ### Question Limit API (Admin)
 - `POST /api/admin/question-limit` — Set the number of questions students will see
@@ -150,5 +160,13 @@ A Spring Boot REST API for managing and taking online exams, with role-based acc
 
 MIT
 
+
+
+crud admin students
+
+frontend : 
+register admin, register student
+exam attempts (get current limit and put new limit in one page)
+questions dashboard (update , get all questions (have user hit GET questions and then have it download a json file on system - can be done using basic js), delete a ques,  )
 
 
