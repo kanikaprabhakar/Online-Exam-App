@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Students CRUD</title>
+</head>
+<body>
+    <h1>Students</h1>
+    <form id="registerStudentForm">
+        <input name="name" placeholder="Name" required>
+        <input name="email" placeholder="Email" required>
+        <input name="password" placeholder="Password" required>
+        <input name="rollNumber" placeholder="Roll Number" required>
+        <input name="phone" placeholder="Phone" required>
+        <input name="address" placeholder="Address" required>
+        <button type="submit">Register Student</button>
+    </form>
+    <script>
+        // Register student
+        document.getElementById('registerStudentForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const body = {
+                name: form.name.value,
+                email: form.email.value,
+                password: form.password.value,
+                role: "student",
+                rollNumber: form.rollNumber.value,
+                phone: form.phone.value,
+                address: form.address.value
+            };
+            await fetch('/api/students/register-student', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            // No automatic getStudents() call
+        };
+    </script>
+</body>
+</html>

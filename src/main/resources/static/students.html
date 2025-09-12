@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Students CRUD</title>
+</head>
+<body>
+    <h1>Students</h1>
+    <form id="registerStudentForm">
+        <input name="name" placeholder="Name" required>
+        <input name="email" placeholder="Email" required>
+        <input name="password" placeholder="Password" required>
+        <input name="rollNumber" placeholder="Roll Number" required>
+        <input name="phone" placeholder="Phone" required>
+        <input name="address" placeholder="Address" required>
+        <button type="submit">Register Student</button>
+    </form>
+    <div id="studentRegisterMsg" style="color:red;margin-top:10px;"></div>
+    <script>
+        // Register student
+        document.getElementById('registerStudentForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const msgDiv = document.getElementById('studentRegisterMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            // Frontend validation
+            if (form.name.value.length < 2) {
+                msgDiv.textContent = 'Name must be at least 2 characters.';
+                return;
+            }
+            if (!form.email.value.includes('@')) {
+                msgDiv.textContent = 'Email must be valid.';
+                return;
+            }
+            if (form.password.value.length < 5) {
+                msgDiv.textContent = 'Password must be at least 5 characters.';
+                return;
+            }
+            if (form.rollNumber.value.length < 1) {
+                msgDiv.textContent = 'Roll Number is required.';
+                return;
+            }
+            // Add more field checks as needed
+            const body = {
+                name: form.name.value,
+                email: form.email.value,
+                password: form.password.value,
+                role: "student",
+                rollNumber: form.rollNumber.value,
+                phone: form.phone.value,
+                address: form.address.value
+            };
+            try {
+                const res = await fetch('/api/students/register-student', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                let data;
+                try { data = await res.json(); } catch { data = {}; }
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = data.message || 'Student registered successfully.';
+                } else {
+                    msgDiv.textContent = data.error || data.message || 'Registration failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        };
+    </script>
+</body>
+</html>

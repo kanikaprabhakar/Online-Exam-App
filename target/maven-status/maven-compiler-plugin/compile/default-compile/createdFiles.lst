@@ -9,11 +9,13 @@ orm\ormfirst\controller\QuestionLimitController.class
 orm\ormfirst\dao\ExamDao.class
 orm\ormfirst\OnlineExamApp.class
 Service\UserService.class
+orm\ormfirst\controller\AdminUserController.class
 orm\ormfirst\dao\QuestionDao.class
 entity\Exam.class
 entity\ExamAttempt.class
 orm\ormfirst\controller\StudentController.class
 orm\ormfirst\controller\ExamApiController.class
+orm\ormfirst\controller\AdminUserController$RegistrationRequest.class
 orm\ormfirst\controller\StudentController$RegistrationRequest.class
 entity\Student.class
 orm\ormfirst\dao\ExamAttemptDao.class

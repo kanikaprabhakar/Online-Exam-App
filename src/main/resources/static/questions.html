@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Questions Dashboard</title>
+</head>
+<body>
+    <h1>Questions</h1>
+    <form id="addQuestionForm" style="margin-bottom:20px;">
+        <input name="question" placeholder="Question" required>
+        <input name="option1" placeholder="Option 1" required>
+        <input name="option2" placeholder="Option 2" required>
+        <input name="option3" placeholder="Option 3" required>
+        <input name="option4" placeholder="Option 4" required>
+        <input name="answer" placeholder="Correct Answer" required>
+        <button type="submit">Add Question</button>
+    </form>
+    <button onclick="getQuestions()">Get All Questions</button>
+    <button onclick="downloadQuestions()">Download Questions JSON</button>
+    <div id="questionMsg" style="color:red;margin-top:10px;"></div>
+    <ul id="questionsList"></ul>
+    <script>
+        // Add question
+        document.getElementById('addQuestionForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const msgDiv = document.getElementById('questionMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            // Frontend validation
+            if (form.question.value.length < 5 || form.question.value.length > 255) {
+                msgDiv.textContent = 'Question must be between 5 and 255 characters.';
+                return;
+            }
+            // Add more field checks as needed
+            const body = {
+                question: form.question.value,
+                option1: form.option1.value,
+                option2: form.option2.value,
+                option3: form.option3.value,
+                option4: form.option4.value,
+                answer: form.answer.value
+            };
+            try {
+                const res = await fetch('/api/questions', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                let data;
+                try { data = await res.json(); } catch { data = {}; }
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = data.message || 'Question added successfully.';
+                    getQuestions();
+                    form.reset();
+                } else {
+                    // Show backend validation errors if present
+                    msgDiv.textContent = data.error || data.message || 'Add question failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        };
+
+        // Get all questions
+        async function getQuestions() {
+            const msgDiv = document.getElementById('questionMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            try {
+                const res = await fetch('/api/questions');
+                if (!res.ok) {
+                    msgDiv.textContent = 'Failed to fetch questions.';
+                    return;
+                }
+                const questions = await res.json();
+                const ul = document.getElementById('questionsList');
+                ul.innerHTML = '';
+                questions.forEach(q => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<b>${q.question}</b> [${q.option1}, ${q.option2}, ${q.option3}, ${q.option4}] <br>Answer: ${q.answer} ` +
+                        `<button onclick="editQuestion(${q.id}, this)">Edit</button> <button onclick="deleteQuestion(${q.id})">Delete</button>`;
+                    ul.appendChild(li);
+                });
+                msgDiv.style.color = 'green';
+                msgDiv.textContent = 'Questions loaded.';
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
+
+        // Edit question
+        function editQuestion(id, btn) {
+            const li = btn.parentElement;
+            const parts = li.innerText.split('Answer:');
+            const questionText = parts[0].split('[')[0].trim();
+            const options = parts[0].split('[')[1].split(']')[0].split(',').map(o => o.trim());
+            const answer = parts[1].split('Edit')[0].replace(':','').trim();
+            li.innerHTML = `<input value="${questionText}" id="editQ${id}" style="width:120px;"> ` +
+                options.map((opt, i) => `<input value="${opt}" id="editO${i+1}_${id}" style="width:80px;">`).join(' ') +
+                ` Answer: <input value="${answer}" id="editA${id}" style="width:80px;"> ` +
+                `<button onclick="saveQuestion(${id}, this)">Save</button> <button onclick="getQuestions()">Cancel</button>`;
+        }
+
+        // Save edited question
+        async function saveQuestion(id, btn) {
+            const li = btn.parentElement;
+            const questionVal = document.getElementById(`editQ${id}`).value;
+            const msgDiv = document.getElementById('questionMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            // Frontend validation
+            if (questionVal.length < 5 || questionVal.length > 255) {
+                msgDiv.textContent = 'Question must be between 5 and 255 characters.';
+                return;
+            }
+            // Add more field checks as needed
+            const body = {
+                question: questionVal,
+                option1: document.getElementById(`editO1_${id}`).value,
+                option2: document.getElementById(`editO2_${id}`).value,
+                option3: document.getElementById(`editO3_${id}`).value,
+                option4: document.getElementById(`editO4_${id}`).value,
+                answer: document.getElementById(`editA${id}`).value
+            };
+            try {
+                const res = await fetch(`/api/questions/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                let data;
+                try { data = await res.json(); } catch { data = {}; }
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = data.message || 'Question updated.';
+                    getQuestions();
+                } else {
+                    // Show backend validation errors if present
+                    msgDiv.textContent = data.error || data.message || 'Update failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
+
+        // Delete question
+        async function deleteQuestion(id) {
+            const msgDiv = document.getElementById('questionMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            try {
+                const res = await fetch(`/api/questions/${id}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = 'Question deleted.';
+                    getQuestions();
+                } else {
+                    msgDiv.textContent = 'Delete failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
+        async function downloadQuestions() {
+            const res = await fetch('/api/questions');
+            const questions = await res.json();
+            const blob = new Blob([JSON.stringify(questions, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'questions.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
