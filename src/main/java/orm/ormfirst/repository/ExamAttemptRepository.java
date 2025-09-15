@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface ExamAttemptRepository extends JpaRepository<ExamAttempt, Integer> {
 	// Find all exam attempts by student email
-	List<ExamAttempt> findByStudentEmail(String studentEmail);
+	List<ExamAttempt> findByStudentEmail(String email);
 }

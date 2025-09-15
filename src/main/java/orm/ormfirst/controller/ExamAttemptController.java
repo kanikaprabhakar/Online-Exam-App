@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/exam-attempts")
+@RequestMapping("/api/exam-attempts")
 public class ExamAttemptController {
-
     @Autowired
     private ExamAttemptRepository examAttemptRepository;
 
@@ -21,15 +20,13 @@ public class ExamAttemptController {
         return ResponseEntity.ok(saved);
     }
 
-    // Get all exam attempts (admin)
-    @GetMapping
-    public List<ExamAttempt> getAllExamAttempts() {
-        return examAttemptRepository.findAll();
-    }
-
     // Get exam attempts by student email
-    @GetMapping("/student/{email}")
-    public List<ExamAttempt> getAttemptsByEmail(@PathVariable String email) {
-        return examAttemptRepository.findByStudentEmail(email);
+    @GetMapping
+    public List<ExamAttempt> getAttemptsByEmail(@RequestParam(required = false) String email) {
+        if (email != null && !email.isEmpty()) {
+            return examAttemptRepository.findByStudentEmail(email);
+        } else {
+            return examAttemptRepository.findAll();
+        }
     }
 }
