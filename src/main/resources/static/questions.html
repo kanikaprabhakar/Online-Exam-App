@@ -19,51 +19,7 @@
     <button onclick="downloadQuestions()">Download Questions JSON</button>
     <div id="questionMsg" style="color:red;margin-top:10px;"></div>
     <ul id="questionsList"></ul>
-    <hr>
-    <h2>Get Student Exam Attempts by Email</h2>
-    <form id="getAttemptsForm" style="margin-bottom:10px;">
-        <input name="studentEmail" placeholder="Student Email" required>
-        <button type="submit">Get Attempts</button>
-    </form>
-    <div id="attemptsMsg" style="color:red;margin-top:10px;"></div>
-    <ul id="attemptsList"></ul>
     <script>
-        // Get student attempts by email
-        document.getElementById('getAttemptsForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const form = e.target;
-            const email = form.studentEmail.value;
-            const msgDiv = document.getElementById('attemptsMsg');
-            msgDiv.style.color = 'red';
-            msgDiv.textContent = '';
-            const ul = document.getElementById('attemptsList');
-            ul.innerHTML = '';
-            if (!email || !email.includes('@')) {
-                msgDiv.textContent = 'Please enter a valid email.';
-                return;
-            }
-            try {
-                const res = await fetch(`/api/exam-attempts?email=${encodeURIComponent(email)}`);
-                if (!res.ok) {
-                    msgDiv.textContent = 'Failed to fetch attempts.';
-                    return;
-                }
-                const attempts = await res.json();
-                if (!attempts.length) {
-                    msgDiv.textContent = 'No attempts found for this email.';
-                    return;
-                }
-                msgDiv.style.color = 'green';
-                msgDiv.textContent = 'Attempts loaded.';
-                attempts.forEach(a => {
-                    const li = document.createElement('li');
-                    li.textContent = `Score: ${a.score}/${a.totalQuestions} at ${a.attemptTime}`;
-                    ul.appendChild(li);
-                });
-            } catch (err) {
-                msgDiv.textContent = 'Network error.';
-            }
-        };
         // Add question
         document.getElementById('addQuestionForm').onsubmit = async function(e) {
             e.preventDefault();

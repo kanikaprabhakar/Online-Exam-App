@@ -1,72 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin CRUD</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Admins</h1>
+    <h1>Admin Dashboard</h1>
+
+    <!-- Register Admin -->
+    <h2>Register Admin</h2>
     <form id="registerAdminForm">
-        <input name="name" placeholder="Name" required>
-        <input name="email" placeholder="Email" required>
-        <input name="password" placeholder="Password" required>
+        <input id="adminName" name="name" placeholder="Name" required>
+        <input id="adminEmail" name="email" placeholder="Email" required>
+        <input id="adminPassword" name="password" type="password" placeholder="Password" required>
         <button type="submit">Register Admin</button>
     </form>
-    <div id="adminRegisterMsg" style="color:red;margin-top:10px;"></div>
-    <hr>
-    <button onclick="getAdmins()">Get All Admins</button>
+    <div id="adminMsg"></div>
+
+    <!-- Edit Admin -->
+    <div id="editAdminSection" style="display:none;">
+        <h2>Edit Admin</h2>
+        <form id="editAdminForm">
+            <input type="hidden" id="editAdminId">
+            <input id="editAdminName" name="name" placeholder="Name" required>
+            <input id="editAdminEmail" name="email" placeholder="Email" required>
+            <button type="submit">Save Admin</button>
+        </form>
+        <div id="editAdminMsg"></div>
+    </div>
+
+    <!-- Admins List -->
+    <h2>All Admins</h2>
     <ul id="adminsList"></ul>
+
     <hr>
-    <h2>Manage Students</h2>
-    <button onclick="getStudents()">Get All Students</button>
+
+    <!-- Students Section -->
+    <h2>All Students</h2>
     <ul id="studentsList"></ul>
+
+    <!-- Edit Student -->
+    <div id="editStudentSection" style="display:none;">
+        <h2>Edit Student</h2>
+        <form id="editStudentForm">
+            <input type="hidden" id="editStudentId">
+            <input id="editStudentName" name="name" placeholder="Name" required>
+            <input id="editStudentEmail" name="email" placeholder="Email" required>
+            <input id="editStudentRollNumber" name="rollNumber" placeholder="Roll Number" required>
+            <input id="editStudentPhone" name="phone" placeholder="Phone" required>
+            <input id="editStudentAddress" name="address" placeholder="Address" required>
+            <button type="submit">Save Student</button>
+        </form>
+        <div id="editStudentMsg"></div>
+    </div>
+
     <script>
-        // Register admin
+        // Register Admin
         document.getElementById('registerAdminForm').onsubmit = async function(e) {
             e.preventDefault();
-            const form = e.target;
-            const msgDiv = document.getElementById('adminRegisterMsg');
-            msgDiv.style.color = 'red';
-            msgDiv.textContent = '';
-            // Frontend validation
-            if (form.name.value.length < 2) {
-                msgDiv.textContent = 'Name must be at least 2 characters.';
-                return;
-            }
-            if (!form.email.value.includes('@')) {
-                msgDiv.textContent = 'Email must be valid.';
-                return;
-            }
-            if (form.password.value.length < 5) {
-                msgDiv.textContent = 'Password must be at least 5 characters.';
-                return;
-            }
-            // Add more field checks as needed
             const body = {
-                name: form.name.value,
-                email: form.email.value,
-                password: form.password.value,
+                name: adminName.value,
+                email: adminEmail.value,
+                password: adminPassword.value,
                 role: "admin"
             };
-            try {
-                const res = await fetch('/api/admin/users/register-admin', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
-                });
-                let data;
-                try { data = await res.json(); } catch { data = {}; }
-                if (res.ok) {
-                    msgDiv.style.color = 'green';
-                    msgDiv.textContent = data.message || 'Admin registered successfully.';
-                    getAdmins();
-                } else {
-                    msgDiv.textContent = data.error || data.message || 'Registration failed.';
-                }
-            } catch (err) {
-                msgDiv.textContent = 'Network error.';
+            const res = await fetch('/api/students/register-admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const msg = document.getElementById('adminMsg');
+            if (res.ok) {
+                msg.style.color = 'green';
+                msg.textContent = 'Admin registered!';
+                getAdmins();
+            } else {
+                const err = await res.text();
+                msg.style.color = 'red';
+                msg.textContent = err || 'Error registering admin.';
             }
         };
+
         // Get all admins
         async function getAdmins() {
             const res = await fetch('/api/admin/users');
@@ -75,20 +89,54 @@
             ul.innerHTML = '';
             admins.forEach(a => {
                 const li = document.createElement('li');
-                li.innerHTML = `<b>${a.name}</b> (${a.email}) ` +
-                    `<button onclick="editAdmin(${a.id}, this)">Edit</button> <button onclick="deleteAdmin(${a.id})">Delete</button>`;
+                li.innerHTML = `<b>${a.name}</b> (${a.email}) 
+                    <button onclick="showEditAdmin(${a.id})">Edit</button>
+                    <button onclick="deleteAdmin(${a.id})">Delete</button>`;
                 ul.appendChild(li);
             });
-        // Edit admin
-        function editAdmin(id, btn) {
-            const li = btn.parentElement;
-            const parts = li.innerText.split('(');
-            const name = parts[0].trim();
-            const email = parts[1].split(')')[0].trim();
-            li.innerHTML = `<input value="${name}" id="editAdminName${id}" style="width:120px;"> ` +
-                `<input value="${email}" id="editAdminEmail${id}" style="width:180px;"> ` +
-                `<input type="password" placeholder="New Password" id="editAdminPass${id}" style="width:120px;"> ` +
-                `<button onclick="saveAdmin(${id}, this)">Save</button> <button onclick="getAdmins()">Cancel</button>`;
+        }
+
+        // Show edit admin form
+        async function showEditAdmin(id) {
+            const res = await fetch(`/api/admin/users/${id}`);
+            if (!res.ok) return;
+            const a = await res.json();
+            document.getElementById('editAdminId').value = a.id;
+            document.getElementById('editAdminName').value = a.name;
+            document.getElementById('editAdminEmail').value = a.email;
+            document.getElementById('editAdminSection').style.display = '';
+        }
+
+        // Save admin (update)
+        document.getElementById('editAdminForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const id = editAdminId.value;
+            const body = {
+                name: editAdminName.value,
+                email: editAdminEmail.value
+            };
+            const res = await fetch(`/api/admin/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const msg = document.getElementById('editAdminMsg');
+            if (res.ok) {
+                msg.style.color = 'green';
+                msg.textContent = 'Admin updated!';
+                getAdmins();
+                editAdminSection.style.display = 'none';
+            } else {
+                msg.style.color = 'red';
+                msg.textContent = await res.text() || 'Error updating admin.';
+            }
+        };
+
+        // Delete admin
+        async function deleteAdmin(id) {
+            if (!confirm('Delete this admin?')) return;
+            await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+            getAdmins();
         }
 
         // Get all students
@@ -99,157 +147,67 @@
             ul.innerHTML = '';
             students.forEach(s => {
                 const li = document.createElement('li');
-                li.innerHTML = `<b>${s.name}</b> (${s.email}) [${s.rollNumber}] ` +
-                    `<button onclick="editStudent(${s.id}, this)">Edit</button> <button onclick="deleteStudent(${s.id})">Delete</button>`;
+                li.innerHTML = `<b>${s.name}</b> (${s.email}) [${s.rollNumber}] 
+                    <button onclick="showEditStudent(${s.studentId})">Edit</button>
+                    <button onclick="deleteStudent(${s.studentId})">Delete</button>`;
                 ul.appendChild(li);
             });
         }
 
-        // Edit student
-        function editStudent(id, btn) {
-            const li = btn.parentElement;
-            const parts = li.innerText.split('(');
-            const name = parts[0].trim();
-            const email = parts[1].split(')')[0].trim();
-            const roll = li.innerText.split('[')[1].split(']')[0].trim();
-            li.innerHTML = `<input value="${name}" id="editStudentName${id}" style="width:120px;"> ` +
-                `<input value="${email}" id="editStudentEmail${id}" style="width:180px;"> ` +
-                `<input value="${roll}" id="editStudentRoll${id}" style="width:80px;"> ` +
-                `<input type="password" placeholder="New Password" id="editStudentPass${id}" style="width:120px;"> ` +
-                `<button onclick="saveStudent(${id}, this)">Save</button> <button onclick="getStudents()">Cancel</button>`;
+        // Show edit student form
+        async function showEditStudent(id) {
+            const res = await fetch(`/api/students/${id}`);
+            if (!res.ok) return;
+            const s = await res.json();
+            document.getElementById('editStudentId').value = s.id;
+            document.getElementById('editStudentName').value = s.name;
+            document.getElementById('editStudentEmail').value = s.email;
+            document.getElementById('editStudentRollNumber').value = s.rollNumber;
+            document.getElementById('editStudentPhone').value = s.phone;
+            document.getElementById('editStudentAddress').value = s.address;
+            document.getElementById('editStudentSection').style.display = '';
         }
 
-        // Save edited student
-        async function saveStudent(id, btn) {
-            const li = btn.parentElement;
-            const name = document.getElementById(`editStudentName${id}`).value;
-            const email = document.getElementById(`editStudentEmail${id}`).value;
-            const rollNumber = document.getElementById(`editStudentRoll${id}`).value;
-            const password = document.getElementById(`editStudentPass${id}`).value;
-            const msgDiv = document.getElementById('adminRegisterMsg');
-            msgDiv.style.color = 'red';
-            msgDiv.textContent = '';
-            if (name.length < 2) {
-                msgDiv.textContent = 'Name must be at least 2 characters.';
-                return;
+        // Save student (update)
+        document.getElementById('editStudentForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const id = editStudentId.value;
+            const body = {
+                name: editStudentName.value,
+                email: editStudentEmail.value,
+                rollNumber: editStudentRollNumber.value,
+                phone: editStudentPhone.value,
+                address: editStudentAddress.value,
+                role: "student",
+                password: "" // or fetch the old password if needed
+            };
+            const res = await fetch(`/api/students/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const msg = document.getElementById('editStudentMsg');
+            if (res.ok) {
+                msg.style.color = 'green';
+                msg.textContent = 'Student updated!';
+                getStudents();
+                editStudentSection.style.display = 'none';
+            } else {
+                msg.style.color = 'red';
+                msg.textContent = await res.text() || 'Error updating student.';
             }
-            if (!email.includes('@')) {
-                msgDiv.textContent = 'Email must be valid.';
-                return;
-            }
-            if (password.length < 5) {
-                msgDiv.textContent = 'Password must be at least 5 characters.';
-                return;
-            }
-            if (rollNumber.length < 1) {
-                msgDiv.textContent = 'Roll Number is required.';
-                return;
-            }
-            const body = { name, email, password, role: "student", rollNumber };
-            try {
-                const res = await fetch(`/api/students/${id}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
-                });
-                let data;
-                try { data = await res.json(); } catch { data = {}; }
-                if (res.ok) {
-                    msgDiv.style.color = 'green';
-                    msgDiv.textContent = data.message || 'Student updated.';
-                    getStudents();
-                } else {
-                    msgDiv.textContent = data.error || data.message || 'Update failed.';
-                }
-            } catch (err) {
-                msgDiv.textContent = 'Network error.';
-            }
-        }
+        };
 
         // Delete student
         async function deleteStudent(id) {
-            const msgDiv = document.getElementById('adminRegisterMsg');
-            msgDiv.style.color = 'red';
-            msgDiv.textContent = '';
-            try {
-                const res = await fetch(`/api/students/${id}`, {
-                    method: 'DELETE'
-                });
-                if (res.ok) {
-                    msgDiv.style.color = 'green';
-                    msgDiv.textContent = 'Student deleted.';
-                    getStudents();
-                } else {
-                    msgDiv.textContent = 'Delete failed.';
-                }
-            } catch (err) {
-                msgDiv.textContent = 'Network error.';
-            }
+            if (!confirm('Delete this student?')) return;
+            await fetch(`/api/students/${id}`, { method: 'DELETE' });
+            getStudents();
         }
 
-        // Save edited admin
-        async function saveAdmin(id, btn) {
-            const li = btn.parentElement;
-            const name = document.getElementById(`editAdminName${id}`).value;
-            const email = document.getElementById(`editAdminEmail${id}`).value;
-            const password = document.getElementById(`editAdminPass${id}`).value;
-            const msgDiv = document.getElementById('adminRegisterMsg');
-            msgDiv.style.color = 'red';
-            msgDiv.textContent = '';
-            if (name.length < 2) {
-                msgDiv.textContent = 'Name must be at least 2 characters.';
-                return;
-            }
-            if (!email.includes('@')) {
-                msgDiv.textContent = 'Email must be valid.';
-                return;
-            }
-            if (password.length < 5) {
-                msgDiv.textContent = 'Password must be at least 5 characters.';
-                return;
-            }
-            const body = { name, email, password, role: "admin" };
-            try {
-                const res = await fetch(`/api/admin/users/${id}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
-                });
-                let data;
-                try { data = await res.json(); } catch { data = {}; }
-                if (res.ok) {
-                    msgDiv.style.color = 'green';
-                    msgDiv.textContent = data.message || 'Admin updated.';
-                    getAdmins();
-                } else {
-                    msgDiv.textContent = data.error || data.message || 'Update failed.';
-                }
-            } catch (err) {
-                msgDiv.textContent = 'Network error.';
-            }
-        }
-
-        // Delete admin
-        async function deleteAdmin(id) {
-            const msgDiv = document.getElementById('adminRegisterMsg');
-            msgDiv.style.color = 'red';
-            msgDiv.textContent = '';
-            try {
-                const res = await fetch(`/api/admin/users/${id}`, {
-                    method: 'DELETE'
-                });
-                if (res.ok) {
-                    msgDiv.style.color = 'green';
-                    msgDiv.textContent = 'Admin deleted.';
-                    getAdmins();
-                } else {
-                    msgDiv.textContent = 'Delete failed.';
-                }
-            } catch (err) {
-                msgDiv.textContent = 'Network error.';
-            }
-        }
-        }
+        // Initial load
+        getAdmins();
+        getStudents();
     </script>
 </body>
 </html>
