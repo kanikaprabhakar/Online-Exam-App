@@ -15,6 +15,10 @@
     <hr>
     <button onclick="getAdmins()">Get All Admins</button>
     <ul id="adminsList"></ul>
+    <hr>
+    <h2>Manage Students</h2>
+    <button onclick="getStudents()">Get All Students</button>
+    <ul id="studentsList"></ul>
     <script>
         // Register admin
         document.getElementById('registerAdminForm').onsubmit = async function(e) {
@@ -70,9 +74,180 @@
             ul.innerHTML = '';
             admins.forEach(a => {
                 const li = document.createElement('li');
-                li.textContent = `${a.name} (${a.email})`;
+                li.innerHTML = `<b>${a.name}</b> (${a.email}) ` +
+                    `<button onclick="editAdmin(${a.id}, this)">Edit</button> <button onclick="deleteAdmin(${a.id})">Delete</button>`;
                 ul.appendChild(li);
             });
+        // Edit admin
+        function editAdmin(id, btn) {
+            const li = btn.parentElement;
+            const parts = li.innerText.split('(');
+            const name = parts[0].trim();
+            const email = parts[1].split(')')[0].trim();
+            li.innerHTML = `<input value="${name}" id="editAdminName${id}" style="width:120px;"> ` +
+                `<input value="${email}" id="editAdminEmail${id}" style="width:180px;"> ` +
+                `<input type="password" placeholder="New Password" id="editAdminPass${id}" style="width:120px;"> ` +
+                `<button onclick="saveAdmin(${id}, this)">Save</button> <button onclick="getAdmins()">Cancel</button>`;
+        }
+
+        // Get all students
+        async function getStudents() {
+            const res = await fetch('/api/students');
+            const students = await res.json();
+            const ul = document.getElementById('studentsList');
+            ul.innerHTML = '';
+            students.forEach(s => {
+                const li = document.createElement('li');
+                li.innerHTML = `<b>${s.name}</b> (${s.email}) [${s.rollNumber}] ` +
+                    `<button onclick="editStudent(${s.id}, this)">Edit</button> <button onclick="deleteStudent(${s.id})">Delete</button>`;
+                ul.appendChild(li);
+            });
+        }
+
+        // Edit student
+        function editStudent(id, btn) {
+            const li = btn.parentElement;
+            const parts = li.innerText.split('(');
+            const name = parts[0].trim();
+            const email = parts[1].split(')')[0].trim();
+            const roll = li.innerText.split('[')[1].split(']')[0].trim();
+            li.innerHTML = `<input value="${name}" id="editStudentName${id}" style="width:120px;"> ` +
+                `<input value="${email}" id="editStudentEmail${id}" style="width:180px;"> ` +
+                `<input value="${roll}" id="editStudentRoll${id}" style="width:80px;"> ` +
+                `<input type="password" placeholder="New Password" id="editStudentPass${id}" style="width:120px;"> ` +
+                `<button onclick="saveStudent(${id}, this)">Save</button> <button onclick="getStudents()">Cancel</button>`;
+        }
+
+        // Save edited student
+        async function saveStudent(id, btn) {
+            const li = btn.parentElement;
+            const name = document.getElementById(`editStudentName${id}`).value;
+            const email = document.getElementById(`editStudentEmail${id}`).value;
+            const rollNumber = document.getElementById(`editStudentRoll${id}`).value;
+            const password = document.getElementById(`editStudentPass${id}`).value;
+            const msgDiv = document.getElementById('adminRegisterMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            if (name.length < 2) {
+                msgDiv.textContent = 'Name must be at least 2 characters.';
+                return;
+            }
+            if (!email.includes('@')) {
+                msgDiv.textContent = 'Email must be valid.';
+                return;
+            }
+            if (password.length < 5) {
+                msgDiv.textContent = 'Password must be at least 5 characters.';
+                return;
+            }
+            if (rollNumber.length < 1) {
+                msgDiv.textContent = 'Roll Number is required.';
+                return;
+            }
+            const body = { name, email, password, role: "student", rollNumber };
+            try {
+                const res = await fetch(`/api/students/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                let data;
+                try { data = await res.json(); } catch { data = {}; }
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = data.message || 'Student updated.';
+                    getStudents();
+                } else {
+                    msgDiv.textContent = data.error || data.message || 'Update failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
+
+        // Delete student
+        async function deleteStudent(id) {
+            const msgDiv = document.getElementById('adminRegisterMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            try {
+                const res = await fetch(`/api/students/${id}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = 'Student deleted.';
+                    getStudents();
+                } else {
+                    msgDiv.textContent = 'Delete failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
+
+        // Save edited admin
+        async function saveAdmin(id, btn) {
+            const li = btn.parentElement;
+            const name = document.getElementById(`editAdminName${id}`).value;
+            const email = document.getElementById(`editAdminEmail${id}`).value;
+            const password = document.getElementById(`editAdminPass${id}`).value;
+            const msgDiv = document.getElementById('adminRegisterMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            if (name.length < 2) {
+                msgDiv.textContent = 'Name must be at least 2 characters.';
+                return;
+            }
+            if (!email.includes('@')) {
+                msgDiv.textContent = 'Email must be valid.';
+                return;
+            }
+            if (password.length < 5) {
+                msgDiv.textContent = 'Password must be at least 5 characters.';
+                return;
+            }
+            const body = { name, email, password, role: "admin" };
+            try {
+                const res = await fetch(`/api/admin/users/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                let data;
+                try { data = await res.json(); } catch { data = {}; }
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = data.message || 'Admin updated.';
+                    getAdmins();
+                } else {
+                    msgDiv.textContent = data.error || data.message || 'Update failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
+
+        // Delete admin
+        async function deleteAdmin(id) {
+            const msgDiv = document.getElementById('adminRegisterMsg');
+            msgDiv.style.color = 'red';
+            msgDiv.textContent = '';
+            try {
+                const res = await fetch(`/api/admin/users/${id}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = 'Admin deleted.';
+                    getAdmins();
+                } else {
+                    msgDiv.textContent = 'Delete failed.';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error.';
+            }
+        }
         }
     </script>
 </body>
