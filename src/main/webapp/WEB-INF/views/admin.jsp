@@ -152,7 +152,7 @@
         <div class="nav-buttons">
             <a href="/admin/students" class="nav-btn">Manage Students</a>
             <a href="/questions" class="nav-btn">Manage Questions</a>
-            <a href="/exam-attempts" class="nav-btn">View Exam Attempts</a>
+            <a href="/admin/exam-attempts" class="nav-btn">View All Exam Attempts</a>
         </div>
 
         <!-- Register Admin Form -->

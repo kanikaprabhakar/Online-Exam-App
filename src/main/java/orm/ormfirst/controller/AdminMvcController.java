@@ -2,14 +2,18 @@ package orm.ormfirst.controller;
 
 import entity.Student;
 import entity.User;
+import entity.ExamAttempt;
 import orm.ormfirst.repository.StudentRepository;
 import orm.ormfirst.repository.UserRepository;
+import orm.ormfirst.repository.ExamAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -20,6 +24,9 @@ public class AdminMvcController {
     
     @Autowired
     private StudentRepository studentRepository;
+    
+    @Autowired
+    private ExamAttemptRepository examAttemptRepository;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -190,5 +197,19 @@ public class AdminMvcController {
     public String deleteStudent(@PathVariable Integer id) {
         studentRepository.deleteById(id);
         return "redirect:/admin/students";
+    }
+
+    @GetMapping("/exam-attempts")
+    public String viewAllExamAttempts(Authentication auth, Model model) {
+        // Get current admin for display
+        String currentAdminEmail = auth.getName();
+        User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+        
+        // Get all exam attempts ordered by date
+        List<ExamAttempt> allAttempts = examAttemptRepository.findAllByOrderByStartTimeDesc();
+        
+        model.addAttribute("attempts", allAttempts);
+        model.addAttribute("currentAdmin", currentAdmin);
+        return "admin-exam-attempts";
     }
 }

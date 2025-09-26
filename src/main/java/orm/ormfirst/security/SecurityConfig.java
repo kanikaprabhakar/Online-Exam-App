@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 
                 // Student only pages
-                .antMatchers("/student-dashboard").hasRole("STUDENT")
+                .antMatchers("/student-dashboard", "/student-profile", "/update-student-profile", "/exam/**").hasRole("STUDENT")
                 
                 // Any other request needs authentication
                 .anyRequest().authenticated()

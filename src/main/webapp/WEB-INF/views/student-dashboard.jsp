@@ -121,19 +121,19 @@
             <div class="feature-card">
                 <h3>Take Exam</h3>
                 <p>Start your online examination</p>
-                <a href="#" class="btn">Start Exam</a>
+                <a href="/exam/start" class="btn">Start Exam</a>
             </div>
             
             <div class="feature-card">
                 <h3>View Results</h3>
                 <p>Check your previous exam results</p>
-                <a href="#" class="btn">View Results</a>
+                <a href="/exam/results" class="btn">View Results</a>
             </div>
             
             <div class="feature-card">
                 <h3>Practice Mode</h3>
                 <p>Practice with sample questions</p>
-                <a href="#" class="btn">Practice</a>
+                <a href="/exam/start" class="btn">Practice</a>
             </div>
             
             <div class="feature-card">
