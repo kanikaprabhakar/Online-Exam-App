@@ -64,7 +64,7 @@
                 password: adminPassword.value,
                 role: "admin"
             };
-            const res = await fetch('/api/students/register-admin', {
+            const res = await fetch('/api/admin/users/register-admin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
