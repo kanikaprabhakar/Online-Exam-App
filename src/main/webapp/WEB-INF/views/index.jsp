@@ -75,19 +75,19 @@
         <h2>Secure MVC Version with JWT Authentication</h2>
         
         <div class="auth-buttons">
-            <a href="/auth/login" class="nav-button btn-login">🔑 Login</a>
+            <a href="/login" class="nav-button btn-login">🔑 Login</a>
         </div>
         
         <div class="role-section">
             <h3>👨‍🎓 Student Registration</h3>
             <p>New student? Create your account to access exams and view results.</p>
-            <a href="/auth/signup" class="nav-button btn-signup">Sign Up as Student</a>
+            <a href="/signup" class="nav-button btn-signup">Sign Up as Student</a>
         </div>
         
         <div class="role-section">
             <h3>👨‍💼 Admin Registration</h3>
             <p>Authorized administrators can register with a valid admin code.</p>
-            <a href="/auth/admin-signup" class="nav-button btn-admin">Register as Admin</a>
+            <a href="/admin-signup" class="nav-button btn-admin">Register as Admin</a>
         </div>
         
         <hr style="margin: 40px 0;">

@@ -95,15 +95,15 @@
             <div class="success">${success}</div>
         </c:if>
 
-        <form action="/auth/login" method="post">
+        <form action="/login" method="POST">
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
             </div>
             
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="Password" required>
             </div>
             
             <button type="submit" class="btn">Login</button>
@@ -111,8 +111,8 @@
         
         <div class="signup-links">
             <p>Don't have an account?</p>
-            <a href="/auth/signup" class="student-link">👨‍🎓 Student Signup</a>
-            <a href="/auth/admin-signup" class="admin-link">👨‍💼 Admin Signup</a>
+            <a href="/signup" class="student-link">👨‍🎓 Student Signup</a>
+            <a href="/admin-signup" class="admin-link">👨‍💼 Admin Signup</a>
         </div>
         
         <div class="signup-links">

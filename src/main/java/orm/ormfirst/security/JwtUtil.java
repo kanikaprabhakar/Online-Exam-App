@@ -45,8 +45,23 @@ public class JwtUtil {
         return (tokenEmail.equals(email) && !isTokenExpired(token));
     }
 
+    // ✅ ADD OVERLOADED validateToken METHOD
+    public Boolean validateToken(String token) {
+        try {
+            getAllClaimsFromToken(token);
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String getEmailFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    // ✅ ADD getUsernameFromToken METHOD (alias for getEmailFromToken)
+    public String getUsernameFromToken(String token) {
+        return getEmailFromToken(token);
     }
 
     public String getRoleFromToken(String token) {
@@ -62,6 +77,12 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
+    // ✅ ADD THE MISSING extractClaim METHOD
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -73,5 +94,9 @@ public class JwtUtil {
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));  // ✅ NOW THIS WILL WORK
     }
 }

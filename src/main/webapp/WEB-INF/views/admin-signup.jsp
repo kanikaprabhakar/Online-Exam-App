@@ -99,7 +99,7 @@
             <div class="error">${error}</div>
         </c:if>
 
-        <form action="/auth/admin-signup" method="post">
+        <form action="/admin-signup" method="post">
             <div class="form-group">
                 <label for="name">Full Name:</label>
                 <input type="text" id="name" name="name" required>
@@ -127,7 +127,7 @@
         </form>
         
         <div class="login-link">
-            Already have an account? <a href="/auth/login">Login here</a>
+            Already have an account? <a href="/login">Login here</a>
         </div>
         
         <div class="login-link">
@@ -135,7 +135,7 @@
         </div>
         
         <div class="login-link">
-            <small>Student? <a href="/auth/signup">Register as Student</a></small>
+            <small>Student? <a href="/signup">Register as Student</a></small>
         </div>
     </div>
 </body>

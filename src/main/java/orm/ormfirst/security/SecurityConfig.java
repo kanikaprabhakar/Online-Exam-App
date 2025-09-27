@@ -33,22 +33,50 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // JWT is stateless
             .and()
-            .authorizeHttpRequests(authz -> authz
-                // Public pages
-                .antMatchers("/", "/login", "/signup", "/auth/**", "/css/**", "/js/**").permitAll()
+            .authorizeRequests()
+                // ✅ PUBLIC ENDPOINTS
+                .antMatchers("/", "/home", "/login", "/signup", "/admin-signup").permitAll()
+                .antMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .antMatchers("/api/auth/**").permitAll()  // Login/signup APIs
+                .antMatchers("/api/*/health").permitAll()  // Health checks
                 
-                // Admin only pages
+                // ✅ ADMIN-ONLY ENDPOINTS
                 .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
                 
-                // Student only pages
-                .antMatchers("/student-dashboard", "/student-profile", "/update-student-profile", "/exam/**").hasRole("STUDENT")
+                // ✅ STUDENT-ONLY ENDPOINTS  
+                .antMatchers("/student-dashboard/**").hasRole("STUDENT")
+                .antMatchers("/exam/**").hasRole("STUDENT")
+                .antMatchers("/api/student/**").hasRole("STUDENT")
                 
-                // Any other request needs authentication
+                // ✅ MICROSERVICE APIs (Allow for internal calls)
+                .antMatchers("/api/users/**").permitAll()
+                .antMatchers("/api/questions-service/**").permitAll() 
+                .antMatchers("/api/exams/**").permitAll()
+                
+                // ✅ ALL OTHER REQUESTS NEED AUTHENTICATION
                 .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .and()
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    // ✅ REDIRECT TO LOGIN WITH CLEAR MESSAGE
+                    response.sendRedirect("/login?error=access_denied");
+                })
+                .authenticationEntryPoint((request, response, authException) -> {
+                    // ✅ REDIRECT TO LOGIN WITH CLEAR MESSAGE  
+                    response.sendRedirect("/login?error=authentication_required");
+                })
+            .and()
+            .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=success")
+                .deleteCookies("authToken")  // ✅ AUTO-DELETE JWT COOKIE
+                .clearAuthentication(true)
+                .invalidateHttpSession(true);
 
         return http.build();
     }

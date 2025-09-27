@@ -89,7 +89,7 @@
     <div class="dashboard-container">
         <div class="header">
             <h1 class="welcome">Welcome, ${student.name}!</h1>
-            <a href="/auth/logout" class="btn btn-logout">Logout</a>
+            <a href="/logout" class="btn btn-logout">Logout</a>
         </div>
 
         <div class="user-info">

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -31,16 +32,35 @@ public class AdminMvcController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("")
     public String adminDashboard(Authentication auth, Model model) {
-        // Get current logged-in admin
         String currentAdminEmail = auth.getName();
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
-        // Only get admin users
-        model.addAttribute("admins", userRepository.findByRoleIgnoreCase("admin"));
-        model.addAttribute("user", new User());
         model.addAttribute("currentAdmin", currentAdmin);
+
+        // Get statistics from microservices
+        try {
+            Long totalStudents = (long) studentRepository.count();
+            model.addAttribute("totalStudents", totalStudents);
+            
+            // Call Question Service
+            Integer totalQuestions = restTemplate.getForObject("http://question-service/api/questions-service/count", Integer.class);
+            model.addAttribute("totalQuestions", totalQuestions != null ? totalQuestions : 0);
+            
+            // Call Exam Service
+            Integer totalAttempts = restTemplate.getForObject("http://exam-service/api/exams/attempts/count", Integer.class);
+            model.addAttribute("totalAttempts", totalAttempts != null ? totalAttempts : 0);
+            
+        } catch (Exception e) {
+            model.addAttribute("totalStudents", studentRepository.count());
+            model.addAttribute("totalQuestions", 0);
+            model.addAttribute("totalAttempts", 0);
+        }
+
         return "admin";
     }
 

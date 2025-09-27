@@ -127,7 +127,7 @@
     <div class="dashboard-container">
         <div class="header">
             <h1>Admin Dashboard</h1>
-            <a href="/auth/logout" class="btn btn-logout">Logout</a>
+            <a href="/logout" class="btn btn-logout">Logout</a>
         </div>
 
         <!-- Current Admin Info -->
