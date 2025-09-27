@@ -25,19 +25,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Check in User table first (admins)
         User user = userRepository.findByEmail(email);
         Student student = studentRepository.findByEmail(email);
-
+        
         if (user != null) {
-            // Admin/User found
+            System.out.println("Loading user: " + user.getEmail() + " with role: " + user.getRole());
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getEmail())
                     .password(user.getPassword())
-                    .authorities("ROLE_" + user.getRole())
+                    .authorities("ROLE_" + user.getRole().toUpperCase())  // ✅ Force uppercase
                     .build();
         } else if (student != null) {
-            // Student found
+            System.out.println("Loading student: " + student.getEmail());
             return org.springframework.security.core.userdetails.User.builder()
                     .username(student.getEmail())
                     .password(student.getPassword())

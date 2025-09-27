@@ -120,6 +120,9 @@ public class AuthController {
                 response.addCookie(jwtCookie);
                 
                 if ("ADMIN".equalsIgnoreCase(userRole)) {
+                    System.out.println("=== ADMIN LOGIN SUCCESS ===");
+                    System.out.println("User role: " + userRole);
+                    System.out.println("JWT token role: " + jwtUtil.getRoleFromToken(token));
                     System.out.println("Redirecting to admin dashboard");
                     return "redirect:/admin";
                 } else {
@@ -175,10 +178,9 @@ public class AuthController {
     public String adminSignup(@RequestParam String name,
                              @RequestParam String email,
                              @RequestParam String password,
-                             @RequestParam String adminCode, // Secret code for admin registration
+                             @RequestParam String adminCode,
                              Model model) {
         
-        // Secret admin registration code (you can change this)
         String SECRET_ADMIN_CODE = "ADMIN2024";
         
         if (!SECRET_ADMIN_CODE.equals(adminCode)) {
@@ -186,18 +188,16 @@ public class AuthController {
             return "admin-signup";
         }
         
-        // Check if email already exists
         if (studentRepository.findByEmail(email) != null || userRepository.findByEmail(email) != null) {
             model.addAttribute("error", "Email already exists");
             return "admin-signup";
         }
 
-        // Create new admin
         User admin = new User();
         admin.setName(name);
         admin.setEmail(email);
         admin.setPassword(passwordEncoder.encode(password));
-        admin.setRole("admin");
+        admin.setRole("ADMIN");  // ✅ CHANGE FROM "admin" TO "ADMIN"
 
         userRepository.save(admin);
         
