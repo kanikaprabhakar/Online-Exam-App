@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-@Table(name = "question") // optional, if you want to specify table name
+@Table(name = "question")
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +34,13 @@ public class Question {
     private String option4;
 
     @Column(name = "correct_answer")
-    private Integer correctAnswer; // 1-4 for options
+    private String correctAnswer; // ✅ Changed from Integer to String - stores actual answer text
 
     @ManyToOne
     @JoinColumn(name = "exam_id")
     private Exam exam;
 
+    // Getters and setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -61,8 +62,8 @@ public class Question {
     public String getOption4() { return option4; }
     public void setOption4(String option4) { this.option4 = option4; }
 
-    public Integer getCorrectAnswer() { return correctAnswer; }
-    public void setCorrectAnswer(Integer correctAnswer) { this.correctAnswer = correctAnswer; }
+    public String getCorrectAnswer() { return correctAnswer; } // ✅ Changed return type
+    public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; } // ✅ Changed param type
 
     public Exam getExam() { return exam; }
     public void setExam(Exam exam) { this.exam = exam; }

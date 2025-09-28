@@ -11,7 +11,7 @@
         th, td { padding: 12px; text-align: left; }
         th { background-color: #f2f2f2; }
         form { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
-        input, textarea, button { padding: 8px; margin: 5px; }
+        input, textarea, button, select { padding: 8px; margin: 5px; }
         textarea { width: 300px; height: 60px; }
         button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
         button:hover { background-color: #45a049; }
@@ -24,31 +24,29 @@
 
     <!-- Add Question Form -->
     <h2>Add New Question</h2>
-    <form action="/questions/add" method="post">
-        <textarea name="question" placeholder="Question Text" required></textarea><br>
-        <input type="text" name="option1" placeholder="Option 1" required>
-        <input type="text" name="option2" placeholder="Option 2" required><br>
-        <input type="text" name="option3" placeholder="Option 3" required>
-        <input type="text" name="option4" placeholder="Option 4" required><br>
-        <input type="number" name="correctAnswer" placeholder="Correct Answer (1-4)" min="1" max="4" required>
+    <form action="/questions/add" method="POST" class="question-form">
+        <input type="text" name="question" placeholder="Enter question" required>
+        <input type="text" name="option1" placeholder="Option 1 (e.g., kp)" required>
+        <input type="text" name="option2" placeholder="Option 2 (e.g., jk)" required>
+        <input type="text" name="option3" placeholder="Option 3 (e.g., lp)" required>
+        <input type="text" name="option4" placeholder="Option 4 (e.g., uy)" required>
+        <input type="text" name="correctAnswer" placeholder="Enter correct answer text (e.g., jk)" required>
         <button type="submit">Add Question</button>
     </form>
 
-    <!-- Edit Question Form (shows only when editing) -->
-    <c:if test="${question.id != null}">
-        <h2>Edit Question</h2>
-        <form action="/questions/update" method="post" class="edit-form">
-            <input type="hidden" name="id" value="${question.id}">
-            <textarea name="question" required>${question.question}</textarea><br>
-            <input type="text" name="option1" value="${question.option1}" placeholder="Option 1" required>
-            <input type="text" name="option2" value="${question.option2}" placeholder="Option 2" required><br>
-            <input type="text" name="option3" value="${question.option3}" placeholder="Option 3" required>
-            <input type="text" name="option4" value="${question.option4}" placeholder="Option 4" required><br>
-            <input type="number" name="correctAnswer" value="${question.correctAnswer}" placeholder="Correct Answer (1-4)" min="1" max="4" required>
+    <!-- Update Question Form (for each question in the list) -->
+    <c:forEach var="q" items="${questions}">
+        <form action="/questions/update" method="POST" class="question-form">
+            <input type="hidden" name="id" value="${q.id}">
+            <input type="text" name="question" value="${q.question}" required>
+            <input type="text" name="option1" value="${q.option1}" required>
+            <input type="text" name="option2" value="${q.option2}" required>
+            <input type="text" name="option3" value="${q.option3}" required>
+            <input type="text" name="option4" value="${q.option4}" required>
+            <input type="text" name="correctAnswer" value="${q.correctAnswer}" required>
             <button type="submit">Update Question</button>
-            <a href="/questions"><button type="button">Cancel</button></a>
         </form>
-    </c:if>
+    </c:forEach>
 
     <!-- Questions List -->
     <h2>All Questions</h2>

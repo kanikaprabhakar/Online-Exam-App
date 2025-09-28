@@ -23,6 +23,8 @@ public class QuestionMvcController {
 
     @PostMapping("/add")
     public String addQuestion(@ModelAttribute Question question) {
+        System.out.println("=== ADD QUESTION ===");
+        System.out.println("Question: " + question.getQuestion());
         questionRepository.save(question);
         return "redirect:/questions";
     }
@@ -37,6 +39,9 @@ public class QuestionMvcController {
 
     @PostMapping("/update")
     public String updateQuestion(@ModelAttribute Question question) {
+        System.out.println("=== UPDATE QUESTION ===");
+        System.out.println("Question ID: " + question.getId());
+        System.out.println("Question: " + question.getQuestion());
         questionRepository.save(question);
         return "redirect:/questions";
     }
