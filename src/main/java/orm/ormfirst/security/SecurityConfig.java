@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;  // ✅ ADD THIS
+import org.springframework.security.core.context.SecurityContextHolder;  // ✅ ADD THIS
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -63,7 +65,12 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    // ✅ REDIRECT TO LOGIN WITH CLEAR MESSAGE
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();  // ✅ NOW WORKS
+                    System.out.println("=== ACCESS DENIED DEBUG ===");
+                    System.out.println("User: " + (auth != null ? auth.getName() : "null"));
+                    System.out.println("Authorities: " + (auth != null ? auth.getAuthorities() : "null"));
+                    System.out.println("Requested URL: " + request.getRequestURI());
+                    System.out.println("Required role: ROLE_ADMIN");
                     response.sendRedirect("/login?error=access_denied");
                 })
                 .authenticationEntryPoint((request, response, authException) -> {

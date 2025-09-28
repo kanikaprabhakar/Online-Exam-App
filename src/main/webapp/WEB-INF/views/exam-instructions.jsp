@@ -1,112 +1,65 @@
 <!-- filepath: src/main/webapp/WEB-INF/views/exam-instructions.jsp -->
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Exam Instructions</title>
+    <title>Exam Instructions - ${config.examTitle}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #4CAF50;
-        }
-        .instructions {
-            background-color: #fff3cd;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #ffc107;
-        }
-        .student-info {
-            background-color: #e8f5e8;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        .btn {
-            padding: 15px 30px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            background-color: #45a049;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .btn-secondary:hover {
-            background-color: #545b62;
-        }
-        ul {
-            text-align: left;
-            margin: 20px 0;
-        }
-        li {
-            margin: 10px 0;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .student-info { background: #e7f3ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .instructions { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .instructions h3 { color: #856404; margin-top: 0; }
+        .instructions ul { margin-left: 20px; }
+        .instructions li { margin-bottom: 10px; }
+        .exam-details { background: #d4edda; border: 1px solid #c3e6cb; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .warning { color: #dc3545; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📝 Online Examination</h1>
-            <h3>Instructions & Guidelines</h3>
+            <h1>📝 ${config.examTitle}</h1>
+            <p>Welcome to the Online Examination System</p>
         </div>
 
         <div class="student-info">
-            <h3>Student Information</h3>
+            <h3>👤 Student Information</h3>
             <p><strong>Name:</strong> ${student.name}</p>
+            <p><strong>Email:</strong> ${student.email}</p>
             <p><strong>Roll Number:</strong> ${student.rollNumber}</p>
-            <p><strong>Total Questions:</strong> ${totalQuestions}</p>
+        </div>
+
+        <div class="exam-details">
+            <h3>📋 Exam Details</h3>
+            <p><strong>Exam Title:</strong> ${config.examTitle}</p>
+            <p><strong>Number of Questions:</strong> ${config.questionCount}</p>
+            <p><strong>Time Duration:</strong> ${config.examDurationMinutes} minutes</p>
+            <p><strong>Question Type:</strong> Multiple Choice Questions (MCQ)</p>
         </div>
 
         <div class="instructions">
             <h3>⚠️ Important Instructions</h3>
             <ul>
-                <li><strong>Time Management:</strong> There is no time limit, but your time will be recorded</li>
-                <li><strong>Navigation:</strong> Use "Previous" and "Next" buttons to navigate between questions</li>
-                <li><strong>Answering:</strong> Select one option for each multiple-choice question</li>
-                <li><strong>Review:</strong> You can review and change your answers before final submission</li>
-                <li><strong>Submission:</strong> Once submitted, you cannot change your answers</li>
-                <li><strong>Technical Issues:</strong> If you face any technical problems, contact your administrator</li>
-                <li><strong>Fair Play:</strong> This exam is monitored. Please maintain academic integrity</li>
+                <li><strong>Time Limit:</strong> You have ${config.examDurationMinutes} minutes to complete the exam</li>
+                <li><strong>Questions:</strong> There are ${config.questionCount} questions in total</li>
+                <li><strong>Navigation:</strong> You can move forward through questions, but cannot go back</li>
+                <li><strong>Selection:</strong> Choose one option for each question</li>
+                <li><strong>Submission:</strong> Your exam will be auto-submitted when time expires</li>
+                <li><strong>Browser:</strong> Do not refresh the page or close the browser during exam</li>
+                <li class="warning">⚠️ Once you start, you cannot restart the exam</li>
             </ul>
         </div>
 
-        <div class="instructions">
-            <h3>📋 Exam Guidelines</h3>
-            <ul>
-                <li>Read each question carefully before selecting your answer</li>
-                <li>Make sure you have answered all questions before submitting</li>
-                <li>Your results will be available immediately after submission</li>
-                <li>Your exam attempt will be recorded for future reference</li>
-            </ul>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <p><strong>Ready to begin your examination?</strong></p>
-            <a href="/exam/question" class="btn">🚀 Start Exam</a>
-            <a href="/student-dashboard" class="btn btn-secondary">Cancel</a>
+        <div style="text-align: center;">
+            <p class="warning">Are you ready to begin the exam?</p>
+            <a href="/exam/question" class="btn btn-success">🚀 Start Exam</a>
+            <a href="/student-dashboard" class="btn btn-secondary">🔙 Back to Dashboard</a>
         </div>
     </div>
 </body>

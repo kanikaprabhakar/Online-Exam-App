@@ -1,11 +1,19 @@
 package orm.ormfirst.repository;
 
+import entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import entity.Question;
+import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
-    // You can add custom query methods here if needed
+    
+    // ✅ SIMPLEST: Get all questions, randomize in Java
+    @Query("SELECT q FROM Question q")
+    List<Question> findAllQuestions();
+    
+    @Query("SELECT COUNT(q) FROM Question q")
+    long countTotalQuestions();
 }

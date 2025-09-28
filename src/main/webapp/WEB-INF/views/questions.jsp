@@ -24,28 +24,38 @@
 
     <!-- Add Question Form -->
     <h2>Add New Question</h2>
-    <form action="/questions/add" method="POST" class="question-form">
+    <form action="/questions/add" method="POST">
         <input type="text" name="question" placeholder="Enter question" required>
-        <input type="text" name="option1" placeholder="Option 1 (e.g., kp)" required>
-        <input type="text" name="option2" placeholder="Option 2 (e.g., jk)" required>
-        <input type="text" name="option3" placeholder="Option 3 (e.g., lp)" required>
-        <input type="text" name="option4" placeholder="Option 4 (e.g., uy)" required>
-        <input type="text" name="correctAnswer" placeholder="Enter correct answer text (e.g., jk)" required>
+        <input type="text" name="option1" placeholder="Option 1" required>
+        <input type="text" name="option2" placeholder="Option 2" required>
+        <input type="text" name="option3" placeholder="Option 3" required>
+        <input type="text" name="option4" placeholder="Option 4" required>
+        <input type="text" name="correctAnswer" placeholder="Enter correct answer text" required>
         <button type="submit">Add Question</button>
     </form>
 
-    <!-- Update Question Form (for each question in the list) -->
+    <!-- Update Question Form -->
     <c:forEach var="q" items="${questions}">
-        <form action="/questions/update" method="POST" class="question-form">
-            <input type="hidden" name="id" value="${q.id}">
-            <input type="text" name="question" value="${q.question}" required>
-            <input type="text" name="option1" value="${q.option1}" required>
-            <input type="text" name="option2" value="${q.option2}" required>
-            <input type="text" name="option3" value="${q.option3}" required>
-            <input type="text" name="option4" value="${q.option4}" required>
-            <input type="text" name="correctAnswer" value="${q.correctAnswer}" required>
-            <button type="submit">Update Question</button>
-        </form>
+        <div class="question-item">
+            <h3>${q.question}</h3>
+            <p>a. ${q.option1}</p>
+            <p>b. ${q.option2}</p>
+            <p>c. ${q.option3}</p>
+            <p>d. ${q.option4}</p>
+            <p><strong>Correct Answer: ${q.correctAnswer}</strong></p>
+            
+            <!-- Update Form -->
+            <form action="/questions/update" method="POST">
+                <input type="hidden" name="id" value="${q.id}">  <!-- ✅ Important: question ID -->
+                <input type="text" name="question" value="${q.question}" required>
+                <input type="text" name="option1" value="${q.option1}" required>
+                <input type="text" name="option2" value="${q.option2}" required>
+                <input type="text" name="option3" value="${q.option3}" required>
+                <input type="text" name="option4" value="${q.option4}" required>
+                <input type="text" name="correctAnswer" value="${q.correctAnswer}" required>
+                <button type="submit">Update Question</button>
+            </form>
+        </div>
     </c:forEach>
 
     <!-- Questions List -->

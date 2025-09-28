@@ -7,8 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ExamAttemptRepository extends JpaRepository<ExamAttempt, Integer> {
-    List<ExamAttempt> findByStudentIdOrderByStartTimeDesc(Integer studentId);
-    List<ExamAttempt> findByStudentEmailOrderByStartTimeDesc(String studentEmail);
-    List<ExamAttempt> findAllByOrderByStartTimeDesc();
+public interface ExamAttemptRepository extends JpaRepository<ExamAttempt, Long> {
+    
+    // ✅ CORRECT: Using actual field names from ExamAttempt entity
+    List<ExamAttempt> findByStudentEmailOrderByAttemptTimeDesc(String studentEmail);
+    
+    List<ExamAttempt> findByStudentEmail(String studentEmail);
+    
+    long countByStudentEmail(String studentEmail);
+    
+    List<ExamAttempt> findAllByOrderByAttemptTimeDesc();
 }

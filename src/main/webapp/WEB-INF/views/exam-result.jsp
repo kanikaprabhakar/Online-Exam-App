@@ -114,19 +114,19 @@
             <h2>Your Score</h2>
             <div class="score-circle">
                 <div class="score-text">
-                    <fmt:formatNumber value="${attempt.score}" maxFractionDigits="1"/>%
+                    <fmt:formatNumber value="${percentage}" maxFractionDigits="1"/>%
                 </div>
             </div>
-            <h3>${attempt.correctAnswers} out of ${attempt.totalQuestions} correct</h3>
+            <h3>${correctAnswers} out of ${totalQuestions} correct</h3>
         </div>
 
         <div class="performance-indicator">
             <c:choose>
-                <c:when test="${attempt.score >= 80}">
+                <c:when test="${percentage >= 80}">
                     <h3 class="excellent">🌟 Excellent Performance!</h3>
                     <p>Outstanding work! You have demonstrated a strong understanding of the subject.</p>
                 </c:when>
-                <c:when test="${attempt.score >= 60}">
+                <c:when test="${percentage >= 60}">
                     <h3 class="good">👍 Good Performance!</h3>
                     <p>Well done! You have a good grasp of the material with room for improvement.</p>
                 </c:when>
@@ -135,19 +135,12 @@
                     <p>Don't worry! Review the material and try again. Practice makes perfect!</p>
                 </c:otherwise>
             </c:choose>
-            
-            <c:if test="${unansweredQuestions > 0}">
-                <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #ffc107;">
-                    <strong>Note:</strong> You left ${unansweredQuestions} question(s) unanswered. 
-                    Make sure to answer all questions in future attempts for better results.
-                </div>
-            </c:if>
         </div>
 
         <div class="details-grid">
             <div class="detail-card">
                 <div class="detail-label">Student Name</div>
-                <div class="detail-value">${attempt.studentName}</div>
+                <div class="detail-value">${student.name}</div>
             </div>
             
             <div class="detail-card">
@@ -157,48 +150,43 @@
             
             <div class="detail-card">
                 <div class="detail-label">Total Questions</div>
-                <div class="detail-value">${attempt.totalQuestions}</div>
+                <div class="detail-value">${totalQuestions}</div>
             </div>
             
             <div class="detail-card">
                 <div class="detail-label">Correct Answers</div>
-                <div class="detail-value">${attempt.correctAnswers}</div>
+                <div class="detail-value">${correctAnswers}</div>
             </div>
             
             <div class="detail-card">
                 <div class="detail-label">Wrong Answers</div>
-                <div class="detail-value">${attempt.totalQuestions - attempt.correctAnswers}</div>
+                <div class="detail-value">${totalQuestions - correctAnswers}</div>
             </div>
             
             <div class="detail-card">
-                <div class="detail-label">Time Taken</div>
-                <div class="detail-value">${attempt.timeTaken} minutes</div>
-            </div>
-            
-            <div class="detail-card">
-                <div class="detail-label">Start Time</div>
+                <div class="detail-label">Score Percentage</div>
                 <div class="detail-value">
-                    ${attempt.startTime.toLocalDate()}<br>
-                    <small>${attempt.startTime.toLocalTime()}</small>
+                    <fmt:formatNumber value="${percentage}" maxFractionDigits="1"/>%
                 </div>
             </div>
             
             <div class="detail-card">
-                <div class="detail-label">Completion Time</div>
+                <div class="detail-label">Result Status</div>
                 <div class="detail-value">
-                    ${attempt.endTime.toLocalDate()}<br>
-                    <small>${attempt.endTime.toLocalTime()}</small>
+                    <c:choose>
+                        <c:when test="${passed}">
+                            <span style="color: #4CAF50; font-weight: bold;">✅ PASSED</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color: #f44336; font-weight: bold;">❌ FAILED</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
-
+            
             <div class="detail-card">
-                <div class="detail-label">Answered Questions</div>
-                <div class="detail-value">${answeredQuestions} out of ${attempt.totalQuestions}</div>
-            </div>
-
-            <div class="detail-card">
-                <div class="detail-label">Unanswered Questions</div>
-                <div class="detail-value">${unansweredQuestions}</div>
+                <div class="detail-label">Passing Score</div>
+                <div class="detail-value">60%</div>
             </div>
         </div>
 

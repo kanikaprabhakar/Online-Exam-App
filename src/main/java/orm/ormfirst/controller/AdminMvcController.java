@@ -3,9 +3,12 @@ package orm.ormfirst.controller;
 import entity.Student;
 import entity.User;
 import entity.ExamAttempt;
+import entity.ExamConfig;
 import orm.ormfirst.repository.StudentRepository;
 import orm.ormfirst.repository.UserRepository;
 import orm.ormfirst.repository.ExamAttemptRepository;
+import orm.ormfirst.repository.ExamConfigRepository;
+import orm.ormfirst.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +33,12 @@ public class AdminMvcController {
     private ExamAttemptRepository examAttemptRepository;
     
     @Autowired
+    private ExamConfigRepository examConfigRepository;
+    
+    @Autowired
+    private QuestionRepository questionRepository;
+    
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -47,9 +56,9 @@ public class AdminMvcController {
             Long totalStudents = (long) studentRepository.count();
             model.addAttribute("totalStudents", totalStudents);
             
-            // Call Question Service
-            Integer totalQuestions = restTemplate.getForObject("http://question-service/api/questions-service/count", Integer.class);
-            model.addAttribute("totalQuestions", totalQuestions != null ? totalQuestions : 0);
+            // USE LOCAL QUESTION REPO INSTEAD OF REST CALL
+            Long totalQuestions = questionRepository.count();
+            model.addAttribute("totalQuestions", totalQuestions);
             
             // Call Exam Service
             Integer totalAttempts = restTemplate.getForObject("http://exam-service/api/exams/attempts/count", Integer.class);
@@ -57,8 +66,8 @@ public class AdminMvcController {
             
         } catch (Exception e) {
             model.addAttribute("totalStudents", studentRepository.count());
-            model.addAttribute("totalQuestions", 0);
-            model.addAttribute("totalAttempts", 0);
+            model.addAttribute("totalQuestions", questionRepository.count()); // FIX THIS
+            model.addAttribute("totalAttempts", examAttemptRepository.count());  // ADD LOCAL FALLBACK
         }
 
         return "admin";
@@ -225,11 +234,61 @@ public class AdminMvcController {
         String currentAdminEmail = auth.getName();
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
-        // Get all exam attempts ordered by date
-        List<ExamAttempt> allAttempts = examAttemptRepository.findAllByOrderByStartTimeDesc();
+        // ✅ FIX: Use correct method name with attemptTime
+        List<ExamAttempt> allAttempts = examAttemptRepository.findAllByOrderByAttemptTimeDesc();
         
         model.addAttribute("attempts", allAttempts);
         model.addAttribute("currentAdmin", currentAdmin);
         return "admin-exam-attempts";
+    }
+
+    @GetMapping("/exam-config")
+    public String examConfig(Model model) {
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        model.addAttribute("config", config);
+        
+        // Also get total questions available
+        long totalQuestions = questionRepository.count();
+        model.addAttribute("totalQuestions", totalQuestions);
+        
+        return "exam-config";
+    }
+
+    @PostMapping("/exam-config")
+    public String updateExamConfig(@RequestParam boolean examEnabled,
+                                  @RequestParam int questionCount,
+                                  @RequestParam String examTitle,
+                                  @RequestParam int examDurationMinutes,
+                                  Model model) {
+        
+        System.out.println("=== UPDATE EXAM CONFIG ===");
+        System.out.println("Exam Enabled: " + examEnabled);
+        System.out.println("Question Count: " + questionCount);
+        System.out.println("Exam Title: " + examTitle);
+        System.out.println("Duration: " + examDurationMinutes + " minutes");
+        
+        // Validate question count
+        long totalQuestions = questionRepository.count();
+        if (questionCount > totalQuestions) {
+            model.addAttribute("error", "Cannot set " + questionCount + " questions. Only " + totalQuestions + " questions available in database.");
+            ExamConfig config = examConfigRepository.getOrCreateConfig();
+            model.addAttribute("config", config);
+            model.addAttribute("totalQuestions", totalQuestions);
+            return "exam-config";
+        }
+        
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        config.setExamEnabled(examEnabled);
+        config.setQuestionCount(Math.min(questionCount, (int)totalQuestions));
+        config.setExamTitle(examTitle);
+        config.setExamDurationMinutes(examDurationMinutes);
+        
+        examConfigRepository.save(config);
+        
+        model.addAttribute("success", "Exam configuration updated successfully!");
+        model.addAttribute("config", config);
+        model.addAttribute("totalQuestions", totalQuestions);
+        
+        return "exam-config";
     }
 }

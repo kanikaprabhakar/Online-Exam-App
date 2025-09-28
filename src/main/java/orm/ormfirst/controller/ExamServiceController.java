@@ -20,18 +20,14 @@ public class ExamServiceController {
 
     @GetMapping("/attempts")
     public ResponseEntity<List<ExamAttempt>> getAllAttempts() {
-        return ResponseEntity.ok(examAttemptRepository.findAllByOrderByStartTimeDesc());
+        // ✅ FIX: Use correct method name with attemptTime
+        return ResponseEntity.ok(examAttemptRepository.findAllByOrderByAttemptTimeDesc());
     }
 
     @GetMapping("/attempts/{studentEmail}")
     public ResponseEntity<List<ExamAttempt>> getStudentAttempts(@PathVariable String studentEmail) {
-        List<ExamAttempt> attempts = examAttemptRepository.findByStudentEmailOrderByStartTimeDesc(studentEmail);
-        return ResponseEntity.ok(attempts);
-    }
-
-    @GetMapping("/attempts/student/{studentId}")
-    public ResponseEntity<List<ExamAttempt>> getAttemptsByStudentId(@PathVariable Integer studentId) {
-        List<ExamAttempt> attempts = examAttemptRepository.findByStudentIdOrderByStartTimeDesc(studentId);
+        // ✅ FIX: Use correct method name with attemptTime
+        List<ExamAttempt> attempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(studentEmail);
         return ResponseEntity.ok(attempts);
     }
 

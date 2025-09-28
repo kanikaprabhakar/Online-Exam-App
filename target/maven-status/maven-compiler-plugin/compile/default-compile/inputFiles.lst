@@ -1,5 +1,6 @@
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\StudentDashboardController.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\AdminUserController.java
+C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\repository\ExamConfigRepository.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\StudentMvcController.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dto\AnswerSubmission.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\security\JwtAuthenticationFilter.java
@@ -14,15 +15,12 @@ C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dto\Ex
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\security\JwtUtil.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\Service\StudentService.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\Service\ExamService.java
-C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dao\QuestionDao.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\entity\Answer.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\QuestionServiceController.java
-C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dao\ExamAttemptDao.java
-C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dao\ExamDao.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\AdminMvcController.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\ExamController.java
+C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\entity\ExamConfig.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\HomeController.java
-C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dao\UserDao.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\StudentController.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dto\StudentQuestionDTO.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\OnlineExamApp.java
@@ -36,7 +34,6 @@ C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\contro
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\entity\ExamAttempt.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\security\SecurityConfig.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\QuestionController.java
-C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\dao\StudentDao.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\entity\User.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\controller\UserServiceController.java
 C:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\java\orm\ormfirst\repository\ExamAttemptRepository.java

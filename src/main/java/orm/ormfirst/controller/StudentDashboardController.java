@@ -1,7 +1,10 @@
 package orm.ormfirst.controller;
 
 import entity.Student;
+import entity.ExamConfig;
 import orm.ormfirst.repository.StudentRepository;
+import orm.ormfirst.repository.ExamConfigRepository;
+import orm.ormfirst.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,12 +22,31 @@ public class StudentDashboardController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private ExamConfigRepository examConfigRepository;
+    
+    @Autowired  
+    private QuestionRepository questionRepository;
 
     @GetMapping("/student-dashboard")
     public String studentDashboard(Authentication auth, Model model) {
         String email = auth.getName();
         Student student = studentRepository.findByEmail(email);
+        
+        if (student == null) {
+            return "redirect:/login?error=student_not_found";
+        }
+        
         model.addAttribute("student", student);
+        
+        // ✅ ADD EXAM CONFIG INFO
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        model.addAttribute("config", config);
+        
+        long totalQuestions = questionRepository.count();
+        model.addAttribute("totalQuestionsInDb", totalQuestions);
+        
         return "student-dashboard";
     }
     

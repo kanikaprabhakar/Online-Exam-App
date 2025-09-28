@@ -1,5 +1,6 @@
 <!-- filepath: src/main/webapp/WEB-INF/views/student-results.jsp -->
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -135,19 +136,11 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">
-                            <c:set var="totalScore" value="0"/>
+                            <c:set var="totalPercentage" value="0"/>
                             <c:forEach var="attempt" items="${attempts}">
-                                <c:set var="totalScore" value="${totalScore + attempt.score}"/>
+                                <c:set var="totalPercentage" value="${totalPercentage + attempt.percentage}"/>
                             </c:forEach>
-                            <c:set var="avgScore" value="${totalScore / attempts.size()}"/>
-                            <c:choose>
-                                <c:when test="${avgScore == avgScore.intValue()}">
-                                    ${avgScore.intValue()}%
-                                </c:when>
-                                <c:otherwise>
-                                    ${String.format("%.1f", avgScore)}%
-                                </c:otherwise>
-                            </c:choose>
+                            <fmt:formatNumber value="${totalPercentage / attempts.size()}" maxFractionDigits="1"/>%
                         </div>
                         <div class="stat-label">Average Score</div>
                     </div>
@@ -155,30 +148,25 @@
                         <div class="stat-number">
                             <c:set var="bestScore" value="0"/>
                             <c:forEach var="attempt" items="${attempts}">
-                                <c:if test="${attempt.score > bestScore}">
-                                    <c:set var="bestScore" value="${attempt.score}"/>
+                                <c:if test="${attempt.percentage > bestScore}">
+                                    <c:set var="bestScore" value="${attempt.percentage}"/>
                                 </c:if>
                             </c:forEach>
-                            <c:choose>
-                                <c:when test="${bestScore == bestScore.intValue()}">
-                                    ${bestScore.intValue()}%
-                                </c:when>
-                                <c:otherwise>
-                                    ${String.format("%.1f", bestScore)}%
-                                </c:otherwise>
-                            </c:choose>
+                            <fmt:formatNumber value="${bestScore}" maxFractionDigits="1"/>%
                         </div>
                         <div class="stat-label">Best Score</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">
-                            <c:set var="totalTime" value="0"/>
+                            <c:set var="passedCount" value="0"/>
                             <c:forEach var="attempt" items="${attempts}">
-                                <c:set var="totalTime" value="${totalTime + attempt.timeTaken}"/>
+                                <c:if test="${attempt.percentage >= 60}">
+                                    <c:set var="passedCount" value="${passedCount + 1}"/>
+                                </c:if>
                             </c:forEach>
-                            ${totalTime / attempts.size()}
+                            ${passedCount}
                         </div>
-                        <div class="stat-label">Avg. Time (min)</div>
+                        <div class="stat-label">Passed Attempts</div>
                     </div>
                 </div>
 
@@ -189,10 +177,9 @@
                         <tr>
                             <th>Attempt #</th>
                             <th>Date & Time</th>
-                            <th>Questions</th>
-                            <th>Correct</th>
+                            <th>Total Questions</th>
                             <th>Score</th>
-                            <th>Time Taken</th>
+                            <th>Percentage</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -201,38 +188,30 @@
                             <tr>
                                 <td><strong>#${status.index + 1}</strong></td>
                                 <td>
-                                    ${attempt.startTime.toLocalDate()}
+                                    <fmt:formatDate value="${attempt.attemptTime}" pattern="MMM dd, yyyy"/>
                                     <br>
                                     <small style="color: #666;">
-                                        ${attempt.startTime.toLocalTime()} - ${attempt.endTime.toLocalTime()}
+                                        <fmt:formatDate value="${attempt.attemptTime}" pattern="hh:mm a"/>
                                     </small>
                                 </td>
                                 <td>${attempt.totalQuestions}</td>
-                                <td>
-                                    ${attempt.correctAnswers}
-                                    <small style="color: #666;">
-                                        (${attempt.totalQuestions - attempt.correctAnswers} wrong)
-                                    </small>
-                                </td>
+                                <td>${attempt.score}</td>
                                 <td class="<c:choose>
-                                    <c:when test='${attempt.score >= 80}'>score-excellent</c:when>
-                                    <c:when test='${attempt.score >= 60}'>score-good</c:when>
+                                    <c:when test='${attempt.percentage >= 80}'>score-excellent</c:when>
+                                    <c:when test='${attempt.percentage >= 60}'>score-good</c:when>
                                     <c:otherwise>score-needs-improvement</c:otherwise>
                                 </c:choose>">
+                                    <fmt:formatNumber value="${attempt.percentage}" maxFractionDigits="1"/>%
+                                </td>
+                                <td>
                                     <c:choose>
-                                        <c:when test="${attempt.score == attempt.score.intValue()}">
-                                            ${attempt.score.intValue()}%
+                                        <c:when test="${attempt.percentage >= 60}">
+                                            <span style="color: #4CAF50; font-weight: bold;">✅ PASSED</span>
                                         </c:when>
                                         <c:otherwise>
-                                            ${String.format("%.1f", attempt.score)}%
+                                            <span style="color: #f44336; font-weight: bold;">❌ FAILED</span>
                                         </c:otherwise>
                                     </c:choose>
-                                </td>
-                                <td>${attempt.timeTaken} min</td>
-                                <td>
-                                    <span style="color: #4CAF50; font-weight: bold;">
-                                        ${attempt.status}
-                                    </span>
                                 </td>
                             </tr>
                         </c:forEach>

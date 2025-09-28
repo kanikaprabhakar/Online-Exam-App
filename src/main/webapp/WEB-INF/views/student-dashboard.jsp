@@ -83,6 +83,18 @@
             border-radius: 5px;
             text-align: center;
         }
+        .exam-status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #e8f5e9;
+        }
+        .status-enabled {
+            color: #2e7d32;
+        }
+        .status-disabled {
+            color: #c62828;
+        }
     </style>
 </head>
 <body>
@@ -141,6 +153,27 @@
                 <p>Update your personal information</p>
                 <a href="/student-profile" class="btn btn-profile">Update Profile</a>
             </div>
+        </div>
+
+        <!-- Add this section to show exam status -->
+        <div class="exam-status">
+            <h3>📝 Exam Status</h3>
+            <c:choose>
+                <c:when test="${config.examEnabled}">
+                    <div class="status-enabled">
+                        <p>✅ <strong>${config.examTitle}</strong> is AVAILABLE</p>
+                        <p>📊 Questions: ${config.questionCount} (randomized)</p>
+                        <p>⏱️ Duration: ${config.examDurationMinutes} minutes</p>
+                        <a href="/exam/start" class="btn btn-primary">🚀 Start Exam</a>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="status-disabled">
+                        <p>❌ Exam is currently <strong>DISABLED</strong></p>
+                        <p>Please contact your administrator</p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </body>

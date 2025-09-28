@@ -3,11 +3,14 @@ package orm.ormfirst.controller;
 import entity.ExamAttempt;
 import entity.Question;
 import entity.Student;
+import entity.ExamConfig;
 import orm.ormfirst.repository.ExamAttemptRepository;
 import orm.ormfirst.repository.QuestionRepository;
 import orm.ormfirst.repository.StudentRepository;
+import orm.ormfirst.repository.ExamConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/exam")
@@ -32,175 +37,220 @@ public class ExamController {
     @Autowired
     private ExamAttemptRepository examAttemptRepository;
 
+    @Autowired
+    private ExamConfigRepository examConfigRepository;
+
     // Start exam
     @GetMapping("/start")
+    @PreAuthorize("hasRole('STUDENT')")
     public String startExam(Authentication auth, HttpSession session, Model model) {
-        String studentEmail = auth.getName();
-        Student student = studentRepository.findByEmail(studentEmail);
-
-        // Get all questions and shuffle them
-        List<Question> allQuestions = questionRepository.findAll();
-        if (allQuestions.isEmpty()) {
-            model.addAttribute("error", "No questions available for the exam.");
-            return "redirect:/student-dashboard";
+        // Get current student
+        String email = auth.getName();
+        Student student = studentRepository.findByEmail(email);
+        
+        if (student == null) {
+            model.addAttribute("error", "Student not found. Please login again.");
+            return "redirect:/login";
         }
-
-        Collections.shuffle(allQuestions); // Randomize question order
-
-        // Store exam session data
-        session.setAttribute("examQuestions", allQuestions);
-        session.setAttribute("examStartTime", LocalDateTime.now());
-        session.setAttribute("currentQuestionIndex", 0);
-        session.setAttribute("studentAnswers", new Integer[allQuestions.size()]);
-
+        
+        // Get exam configuration
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        
+        if (!config.isExamEnabled()) {
+            model.addAttribute("error", "Exam is currently disabled by admin.");
+            model.addAttribute("student", student);
+            model.addAttribute("config", config);
+            return "student-dashboard";
+        }
+        
+        // Clear any previous exam session data
+        session.removeAttribute("examQuestions");
+        session.removeAttribute("studentAnswers");
+        session.removeAttribute("currentQuestionIndex");
+        session.removeAttribute("examStartTime");
+        
+        // Add data to model
         model.addAttribute("student", student);
-        model.addAttribute("totalQuestions", allQuestions.size());
-
+        model.addAttribute("config", config);
+        
         return "exam-instructions";
     }
 
     // Show current question
     @GetMapping("/question")
-    public String showQuestion(HttpSession session, Model model) {
-        List<Question> examQuestions = (List<Question>) session.getAttribute("examQuestions");
-        Integer currentIndex = (Integer) session.getAttribute("currentQuestionIndex");
-        Integer[] studentAnswers = (Integer[]) session.getAttribute("studentAnswers");
-
-        if (examQuestions == null || currentIndex == null) {
-            return "redirect:/exam/start";
+    @PreAuthorize("hasRole('STUDENT')")
+    public String examQuestion(Authentication auth, HttpSession session, Model model) {
+        // Get current student
+        String email = auth.getName();
+        Student student = studentRepository.findByEmail(email);
+        
+        if (student == null) {
+            return "redirect:/login?error=student_not_found";
         }
-
+        
+        // Get exam configuration
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        
+        if (!config.isExamEnabled()) {
+            model.addAttribute("error", "Exam has been disabled.");
+            return "student-dashboard";
+        }
+        
+        // Get or create exam questions for this session
+        @SuppressWarnings("unchecked")
+        List<Question> examQuestions = (List<Question>) session.getAttribute("examQuestions");
+        
+        if (examQuestions == null) {
+            // First time - generate random questions
+            List<Question> allQuestions = questionRepository.findAll();
+            Collections.shuffle(allQuestions);
+            examQuestions = allQuestions.stream()
+                    .limit(config.getQuestionCount())
+                    .collect(Collectors.toList());
+            
+            session.setAttribute("examQuestions", examQuestions);
+            session.setAttribute("studentAnswers", new ArrayList<String>());
+            session.setAttribute("currentQuestionIndex", 0);
+            session.setAttribute("examStartTime", LocalDateTime.now());
+            
+            System.out.println("=== EXAM STARTED ===");
+            System.out.println("Student: " + student.getName());
+            System.out.println("Questions generated: " + examQuestions.size());
+        }
+        
+        // Get current question index
+        Integer currentIndex = (Integer) session.getAttribute("currentQuestionIndex");
+        if (currentIndex == null) currentIndex = 0;
+        
+        // Check if exam is completed
         if (currentIndex >= examQuestions.size()) {
             return "redirect:/exam/submit";
         }
-
+        
         Question currentQuestion = examQuestions.get(currentIndex);
+        
+        // Add all data to model
+        model.addAttribute("student", student);
+        model.addAttribute("config", config);
         model.addAttribute("question", currentQuestion);
         model.addAttribute("currentIndex", currentIndex);
         model.addAttribute("totalQuestions", examQuestions.size());
-        model.addAttribute("selectedAnswer", studentAnswers[currentIndex]);
-
+        model.addAttribute("questionsRemaining", examQuestions.size() - currentIndex);
+        
+        System.out.println("=== SHOWING QUESTION ===");
+        System.out.println("Question " + (currentIndex + 1) + ": " + currentQuestion.getQuestion());
+        System.out.println("Options: " + currentQuestion.getOption1() + ", " + currentQuestion.getOption2() + 
+                          ", " + currentQuestion.getOption3() + ", " + currentQuestion.getOption4());
+        
         return "exam-question";
     }
 
     // Save answer and go to next question
     @PostMapping("/answer")
-    public String saveAnswer(@RequestParam(required = false) Integer answer,
-                           @RequestParam String action,
+    @PreAuthorize("hasRole('STUDENT')")
+    @ResponseBody
+    public String saveAnswer(@RequestParam Integer questionIndex, 
+                           @RequestParam String selectedAnswer, 
                            HttpSession session) {
-        Integer currentIndex = (Integer) session.getAttribute("currentQuestionIndex");
-        Integer[] studentAnswers = (Integer[]) session.getAttribute("studentAnswers");
-
-        if (currentIndex != null && studentAnswers != null) {
-            // Handle unmarked answers - store null instead of causing error
-            studentAnswers[currentIndex] = answer; // This can be null, which is fine
+        
+        @SuppressWarnings("unchecked")
+        List<String> studentAnswers = (List<String>) session.getAttribute("studentAnswers");
+        
+        if (studentAnswers == null) {
+            studentAnswers = new ArrayList<>();
             session.setAttribute("studentAnswers", studentAnswers);
-
-            if ("next".equals(action) && currentIndex < studentAnswers.length - 1) {
-                session.setAttribute("currentQuestionIndex", currentIndex + 1);
-                return "redirect:/exam/question";
-            } else if ("previous".equals(action) && currentIndex > 0) {
-                session.setAttribute("currentQuestionIndex", currentIndex - 1);
-                return "redirect:/exam/question";
-            }
         }
-
-        return "redirect:/exam/submit";
+        
+        // Ensure list is large enough
+        while (studentAnswers.size() <= questionIndex) {
+            studentAnswers.add("");
+        }
+        
+        // Save the answer
+        studentAnswers.set(questionIndex, selectedAnswer);
+        
+        // Move to next question
+        session.setAttribute("currentQuestionIndex", questionIndex + 1);
+        
+        System.out.println("=== ANSWER SAVED ===");
+        System.out.println("Question " + (questionIndex + 1) + " Answer: " + selectedAnswer);
+        
+        return "Answer saved successfully";
     }
 
     // Submit exam
     @GetMapping("/submit")
+    @PreAuthorize("hasRole('STUDENT')")
     public String submitExam(Authentication auth, HttpSession session, Model model) {
-        List<Question> examQuestions = (List<Question>) session.getAttribute("examQuestions");
-        Integer[] studentAnswers = (Integer[]) session.getAttribute("studentAnswers");
-        LocalDateTime startTime = (LocalDateTime) session.getAttribute("examStartTime");
-
-        if (examQuestions == null || studentAnswers == null || startTime == null) {
-            model.addAttribute("error", "Invalid exam session. Please start the exam again.");
-            return "redirect:/student-dashboard";
-        }
-
-        // Calculate results with null-safe checking
-        int correctAnswers = 0;
-        int answeredQuestions = 0;
+        // Get current student
+        String email = auth.getName();
+        Student student = studentRepository.findByEmail(email);
         
-        for (int i = 0; i < examQuestions.size(); i++) {
-            Question question = examQuestions.get(i);
-            Integer studentAnswer = studentAnswers[i];
-            
-            if (studentAnswer != null) {
-                answeredQuestions++;
-                if (studentAnswer.equals(question.getCorrectAnswer())) {
-                    correctAnswers++;
-                }
+        @SuppressWarnings("unchecked")
+        List<Question> examQuestions = (List<Question>) session.getAttribute("examQuestions");
+        @SuppressWarnings("unchecked")
+        List<String> studentAnswers = (List<String>) session.getAttribute("studentAnswers");
+        LocalDateTime examStartTime = (LocalDateTime) session.getAttribute("examStartTime");
+        
+        if (examQuestions == null || studentAnswers == null) {
+            model.addAttribute("error", "No exam data found. Please start the exam again.");
+            return "student-dashboard";
+        }
+        
+        // Calculate score
+        int correctAnswers = 0;
+        for (int i = 0; i < examQuestions.size() && i < studentAnswers.size(); i++) {
+            Question q = examQuestions.get(i);
+            String studentAnswer = studentAnswers.get(i);
+            if (q.getCorrectAnswer().equals(studentAnswer)) {
+                correctAnswers++;
             }
         }
-
-        // Calculate score and time taken properly
-        double score = examQuestions.size() > 0 ? ((double) correctAnswers / examQuestions.size()) * 100 : 0;
-        LocalDateTime endTime = LocalDateTime.now();
         
-        // Fix time calculation - convert to minutes properly
-        long timeTakenMinutes = java.time.Duration.between(startTime, endTime).toMinutes();
-        if (timeTakenMinutes < 1) {
-            timeTakenMinutes = 1; // Minimum 1 minute
-        }
-
-        // Get student info
-        String studentEmail = auth.getName();
-        Student student = studentRepository.findByEmail(studentEmail);
-
-        if (student == null) {
-            model.addAttribute("error", "Student not found. Please login again.");
-            return "redirect:/login";
-        }
-
-        // Create exam attempt record
+        int totalQuestions = examQuestions.size();
+        double percentage = (double) correctAnswers / totalQuestions * 100;
+        
+        // Save exam attempt
         ExamAttempt attempt = new ExamAttempt();
-        attempt.setStudentId(student.getStudentId());
-        attempt.setStudentName(student.getName());
         attempt.setStudentEmail(student.getEmail());
-        attempt.setTotalQuestions(examQuestions.size());
-        attempt.setCorrectAnswers(correctAnswers);
-        attempt.setScore(score);
-        attempt.setStartTime(startTime);
-        attempt.setEndTime(endTime);
-        attempt.setTimeTaken((int) timeTakenMinutes);
-        attempt.setStatus("COMPLETED");
-
-        try {
-            examAttemptRepository.save(attempt);
-        } catch (Exception e) {
-            model.addAttribute("error", "Failed to save exam results. Please contact administrator.");
-            return "redirect:/student-dashboard";
-        }
-
-        // Clear session
+        attempt.setScore(correctAnswers);
+        attempt.setTotalQuestions(totalQuestions);
+        attempt.setPercentage(percentage);
+        attempt.setAttemptTime(examStartTime != null ? examStartTime : LocalDateTime.now());
+        examAttemptRepository.save(attempt);
+        
+        // Clear session data
         session.removeAttribute("examQuestions");
         session.removeAttribute("studentAnswers");
-        session.removeAttribute("examStartTime");
         session.removeAttribute("currentQuestionIndex");
-
-        // Add statistics for display
-        model.addAttribute("attempt", attempt);
+        session.removeAttribute("examStartTime");
+        
+        // Add results to model
         model.addAttribute("student", student);
-        model.addAttribute("answeredQuestions", answeredQuestions);
-        model.addAttribute("unansweredQuestions", examQuestions.size() - answeredQuestions);
-
+        model.addAttribute("correctAnswers", correctAnswers);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("percentage", Math.round(percentage * 100.0) / 100.0);
+        model.addAttribute("passed", percentage >= 60);
+        
+        System.out.println("=== EXAM SUBMITTED ===");
+        System.out.println("Student: " + student.getName());
+        System.out.println("Score: " + correctAnswers + "/" + totalQuestions + " (" + percentage + "%)");
+        
         return "exam-result";
     }
 
     // View all results for student
     @GetMapping("/results")
+    @PreAuthorize("hasRole('STUDENT')")
     public String viewResults(Authentication auth, Model model) {
-        String studentEmail = auth.getName();
-        Student student = studentRepository.findByEmail(studentEmail);
+        String email = auth.getName();
+        Student student = studentRepository.findByEmail(email);
         
-        List<ExamAttempt> attempts = examAttemptRepository.findByStudentEmailOrderByStartTimeDesc(studentEmail);
+        List<ExamAttempt> attempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(email);
         
         model.addAttribute("student", student);
         model.addAttribute("attempts", attempts);
         
-        return "student-results";
+        return "exam-results-history";
     }
 }

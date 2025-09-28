@@ -1,323 +1,231 @@
-<!-- filepath: src/main/webapp/WEB-INF/views/exam-question.jsp -->
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!-- filepath: c:\Users\DELL\eclipse-workspace\OnlineExamApp2\src\main\webapp\WEB-INF\views\exam-question.jsp -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Exam - Question ${currentIndex + 1}</title>
+    <title>Question ${currentIndex + 1} - ${config.examTitle}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .progress-bar {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .progress {
-            height: 20px;
-            background-color: #4CAF50;
-            border-radius: 10px;
-            text-align: center;
-            line-height: 20px;
-            color: white;
-            font-weight: bold;
-        }
-        .question-header {
-            background-color: #e8f5e8;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .question-box {
-            background-color: #f9f9f9;
-            padding: 25px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #4CAF50;
-        }
-        .options {
-            margin: 20px 0;
-        }
-        .option {
-            margin: 15px 0;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .option:hover {
-            border-color: #4CAF50;
-            background-color: #f0f8ff;
-        }
-        .option.selected {
-            border-color: #4CAF50;
-            background-color: #e8f5e8;
-        }
-        .option input[type="radio"] {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-primary {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #45a049;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #545b62;
-        }
-        .btn-danger {
-            background-color: #f44336;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #da190b;
-        }
-        .question-text {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .unanswered-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border: 2px solid #ffc107;
-            display: none;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        @keyframes pulse {
-            0% { 
-                background-color: #fff3cd;
-                border-color: #ffc107;
-            }
-            50% { 
-                background-color: #ffe69c;
-                border-color: #ffb300;
-            }
-            100% { 
-                background-color: #fff3cd;
-                border-color: #ffc107;
-            }
-        }
+        body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+        .header { background: #007bff; color: white; padding: 15px 0; position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .progress-bar { background: #e9ecef; height: 10px; border-radius: 5px; margin: 10px 0; }
+        .progress { background: #28a745; height: 100%; border-radius: 5px; transition: width 0.3s; }
+        .container { max-width: 800px; margin: 80px auto 20px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .question-header { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .question-text { font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.6; }
+        .options { margin: 20px 0; }
+        .option { background: #fff; border: 2px solid #e9ecef; padding: 15px; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .option:hover { border-color: #007bff; background: #f8f9fa; }
+        .option.selected { border-color: #007bff; background: #e7f3ff; }
+        .option-text { font-size: 16px; }
+        .navigation { text-align: center; margin-top: 30px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn:disabled { background: #6c757d; cursor: not-allowed; }
+        .student-info { font-size: 14px; }
+        .saving { color: #ffc107; font-weight: bold; }
+        .saved { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
     </style>
-    <script>
-        function selectOption(optionNumber) {
-            // Remove selected class from all options
-            const options = document.querySelectorAll('.option');
-            options.forEach(opt => opt.classList.remove('selected'));
-            
-            // Add selected class to clicked option
-            const selectedOption = document.getElementById('option' + optionNumber);
-            selectedOption.classList.add('selected');
-            
-            // Check the radio button
-            document.getElementById('answer' + optionNumber).checked = true;
-            
-            // Hide warning
-            const warning = document.getElementById('unansweredWarning');
-            if (warning) {
-                warning.style.display = 'none';
-            }
-        }
-
-        function handleNext(event) {
-            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-            
-            if (!selectedAnswer) {
-                // PREVENT the form from submitting
-                event.preventDefault();
-                
-                // Show the warning
-                const warning = document.getElementById('unansweredWarning');
-                warning.style.display = 'block';
-                warning.style.animation = 'pulse 1.5s infinite';
-                warning.innerHTML = '⚠️ <strong>You haven\'t selected an answer!</strong> Select an option below, or click "Skip & Next" to continue without answering.';
-                
-                // Show the skip button
-                const nextBtn = document.getElementById('nextBtn');
-                const skipBtn = document.getElementById('skipBtn');
-                nextBtn.style.display = 'none';
-                skipBtn.style.display = 'inline-block';
-                
-                return false; // Prevent form submission
-            }
-            
-            return true; // Allow form submission
-        }
-
-        function skipQuestion() {
-            // Allow skipping - just submit the form with next action
-            document.getElementById('skipBtn').name = 'action';
-            document.getElementById('skipBtn').value = 'next';
-            return true;
-        }
-
-        function confirmSubmit() {
-            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-            if (!selectedAnswer) {
-                return confirm('⚠️ You haven\'t answered this question.\n\nAre you sure you want to submit the exam? Unanswered questions will be marked incorrect.');
-            }
-            return confirm('Are you sure you want to submit the exam?\n\nYou cannot change your answers after submission.');
-        }
-
-        // Progress bar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if there's already an answer selected
-            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-            if (selectedAnswer) {
-                const optionNumber = selectedAnswer.value;
-                document.getElementById('option' + optionNumber).classList.add('selected');
-            }
-
-            // Progress bar
-            var currentIndex = parseInt('${currentIndex}') || 0;
-            var totalQuestions = parseInt('${totalQuestions}') || 1;
-            
-            if (totalQuestions > 0) {
-                var progressWidth = ((currentIndex + 1) * 100) / totalQuestions;
-                const progressBars = document.querySelectorAll('.progress');
-                progressBars.forEach(bar => {
-                    bar.style.width = progressWidth + '%';
-                });
-            }
-        });
-    </script>
 </head>
 <body>
-    <div class="container">
-        <!-- Progress Bar -->
-        <div class="progress-bar">
-            <div class="progress">
-                Question ${currentIndex + 1} of ${totalQuestions}
+    <div class="header">
+        <div class="header-content">
+            <div class="student-info">
+                <strong>${student.name}</strong> (${student.rollNumber})
             </div>
-        </div>
-
-        <!-- Question Header -->
-        <div class="question-header">
-            <h2>Question ${currentIndex + 1}</h2>
             <div>
-                <span style="background: #2196F3; color: white; padding: 5px 10px; border-radius: 3px;">
-                    ID: ${question.id}
-                </span>
+                <strong>Question ${currentIndex + 1} of ${totalQuestions}</strong>
+            </div>
+            <div>
+                <span id="timer">Time: ${config.examDurationMinutes}:00</span>
             </div>
         </div>
-
-        <!-- Question -->
-        <div class="question-box">
-            <div class="question-text">
-                ${question.question}
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <div class="progress-bar">
+                <div class="progress" id="progressBar" style="width: 0%"></div>
             </div>
         </div>
-
-        <!-- Unanswered Warning -->
-        <div id="unansweredWarning" class="unanswered-warning">
-            ⚠️ <strong>Warning:</strong> You haven't selected an answer for this question.
-        </div>
-
-        <!-- Answer Form -->
-        <form action="/exam/answer" method="post" id="answerForm">
-            <div class="options">
-                <div class="option ${selectedAnswer == 1 ? 'selected' : ''}" id="option1" onclick="selectOption(1)">
-                    <input type="radio" id="answer1" name="answer" value="1" ${selectedAnswer == 1 ? 'checked' : ''}>
-                    <label for="answer1"><strong>A.</strong> ${question.option1}</label>
-                </div>
-
-                <div class="option ${selectedAnswer == 2 ? 'selected' : ''}" id="option2" onclick="selectOption(2)">
-                    <input type="radio" id="answer2" name="answer" value="2" ${selectedAnswer == 2 ? 'checked' : ''}>
-                    <label for="answer2"><strong>B.</strong> ${question.option2}</label>
-                </div>
-
-                <div class="option ${selectedAnswer == 3 ? 'selected' : ''}" id="option3" onclick="selectOption(3)">
-                    <input type="radio" id="answer3" name="answer" value="3" ${selectedAnswer == 3 ? 'checked' : ''}>
-                    <label for="answer3"><strong>C.</strong> ${question.option3}</label>
-                </div>
-
-                <div class="option ${selectedAnswer == 4 ? 'selected' : ''}" id="option4" onclick="selectOption(4)">
-                    <input type="radio" id="answer4" name="answer" value="4" ${selectedAnswer == 4 ? 'checked' : ''}>
-                    <label for="answer4"><strong>D.</strong> ${question.option4}</label>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="navigation">
-                <div>
-                    <c:if test="${currentIndex > 0}">
-                        <button type="submit" name="action" value="previous" class="btn btn-secondary">⬅️ Previous</button>
-                    </c:if>
-                </div>
-
-                <div>
-                    <a href="/student-dashboard" class="btn btn-danger" 
-                       onclick="return confirm('Are you sure you want to exit the exam? Your progress will be lost.')">
-                        Exit Exam
-                    </a>
-                </div>
-
-                <div>
-                    <c:choose>
-                        <c:when test="${currentIndex < totalQuestions - 1}">
-                            <!-- Normal Next Button -->
-                            <button type="submit" name="action" value="next" id="nextBtn" class="btn btn-primary" onclick="return handleNext(event)">
-                                Next ➡️
-                            </button>
-                            
-                            <!-- Skip Button (hidden by default) -->
-                            <button type="submit" name="action" value="next" id="skipBtn" class="btn" 
-                                    style="background-color: #ff9800; color: white; display: none;" onclick="return skipQuestion()">
-                                Skip & Next ➡️
-                            </button>
-                        </c:when>
-                        <c:otherwise>
-                            <button type="submit" name="action" value="submit" class="btn btn-primary" onclick="return confirmSubmit()">
-                                🏁 Submit Exam
-                            </button>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
-        </form>
     </div>
+
+    <div class="container">
+        <div class="question-header">
+            <h3>Question ${currentIndex + 1} of ${totalQuestions}</h3>
+            <p>${questionsRemaining} questions remaining</p>
+            <div id="saveStatus"></div>
+        </div>
+
+        <div class="question-text">
+            ${question.question}
+        </div>
+
+        <div class="options">
+            <div class="option" data-answer="<c:out value='${question.option1}' escapeXml='true'/>" onclick="selectOption(this)">
+                <div class="option-text"><strong>A.</strong> ${question.option1}</div>
+            </div>
+            <div class="option" data-answer="<c:out value='${question.option2}' escapeXml='true'/>" onclick="selectOption(this)">
+                <div class="option-text"><strong>B.</strong> ${question.option2}</div>
+            </div>
+            <div class="option" data-answer="<c:out value='${question.option3}' escapeXml='true'/>" onclick="selectOption(this)">
+                <div class="option-text"><strong>C.</strong> ${question.option3}</div>
+            </div>
+            <div class="option" data-answer="<c:out value='${question.option4}' escapeXml='true'/>" onclick="selectOption(this)">
+                <div class="option-text"><strong>D.</strong> ${question.option4}</div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <c:choose>
+                <c:when test="${currentIndex + 1 >= totalQuestions}">
+                    <button id="submitBtn" class="btn btn-success" onclick="nextQuestion()" disabled>
+                        🏁 Submit Exam
+                    </button>
+                </c:when>
+                <c:otherwise>
+                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()" disabled>
+                        Next Question ➡️
+                    </button>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var currentIndex = parseInt('${currentIndex}');
+        var totalQuestions = parseInt('${totalQuestions}');
+        var examDurationMinutes = parseInt('${config.examDurationMinutes}');
+        var selectedAnswer = '';
+        var isSubmitting = false; // ✅ ADD: Prevent multiple submissions
+        
+        // ✅ SET PROGRESS BAR
+        document.addEventListener('DOMContentLoaded', function() {
+            var progressPercent = ((currentIndex + 1) / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+        });
+        
+        function selectOption(element) {
+            var answer = element.getAttribute('data-answer');
+            
+            document.querySelectorAll('.option').forEach(function(opt) {
+                opt.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            selectedAnswer = answer;
+            
+            var nextBtn = document.getElementById('nextBtn');
+            var submitBtn = document.getElementById('submitBtn');
+            
+            if (nextBtn) nextBtn.removeAttribute('disabled');
+            if (submitBtn) submitBtn.removeAttribute('disabled');
+            
+            console.log('Selected answer:', answer);
+        }
+        
+        function nextQuestion() {
+            if (isSubmitting) return; // ✅ PREVENT double submission
+            
+            if (!selectedAnswer) {
+                alert('Please select an answer before proceeding.');
+                return;
+            }
+            
+            isSubmitting = true;
+            
+            // Show saving status
+            document.getElementById('saveStatus').innerHTML = '<span class="saving">💾 Saving answer...</span>';
+            
+            // Disable buttons
+            var nextBtn = document.getElementById('nextBtn');
+            var submitBtn = document.getElementById('submitBtn');
+            if (nextBtn) nextBtn.setAttribute('disabled', 'disabled');
+            if (submitBtn) submitBtn.setAttribute('disabled', 'disabled');
+            
+            // ✅ REMOVE onbeforeunload temporarily during navigation
+            window.onbeforeunload = null;
+            
+            // Save answer
+            fetch('/exam/answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'questionIndex=' + currentIndex + '&selectedAnswer=' + encodeURIComponent(selectedAnswer)
+            })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(data) {
+                console.log('Answer saved:', data);
+                document.getElementById('saveStatus').innerHTML = '<span class="saved">✅ Answer saved!</span>';
+                
+                // Navigate after short delay
+                setTimeout(function() {
+                    if ((currentIndex + 1) >= totalQuestions) {
+                        window.location.href = '/exam/submit';
+                    } else {
+                        window.location.href = '/exam/question';
+                    }
+                }, 500);
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                document.getElementById('saveStatus').innerHTML = '<span class="error">❌ Error saving answer!</span>';
+                
+                isSubmitting = false;
+                // Re-enable buttons on error
+                if (nextBtn) nextBtn.removeAttribute('disabled');
+                if (submitBtn) submitBtn.removeAttribute('disabled');
+                
+                // ✅ RESTORE onbeforeunload on error
+                window.onbeforeunload = function() {
+                    return 'Are you sure you want to leave? Your exam progress will be lost.';
+                };
+                
+                alert('Error saving answer. Please try again.');
+            });
+        }
+        
+        // Timer functionality
+        var timeInSeconds = examDurationMinutes * 60;
+        
+        function updateTimer() {
+            if (timeInSeconds <= 0) {
+                alert('Time is up! Submitting exam...');
+                window.onbeforeunload = null; // ✅ REMOVE warning before auto-submit
+                window.location.href = '/exam/submit';
+                return;
+            }
+            
+            var minutes = Math.floor(timeInSeconds / 60);
+            var seconds = timeInSeconds % 60;
+            
+            var minutesStr = (minutes < 10 ? '0' : '') + minutes;
+            var secondsStr = (seconds < 10 ? '0' : '') + seconds;
+            
+            document.getElementById('timer').textContent = 'Time: ' + minutesStr + ':' + secondsStr;
+            
+            timeInSeconds--;
+        }
+        
+        setInterval(updateTimer, 1000);
+        
+        // ✅ ONLY warn on accidental navigation, NOT on form submission
+        window.onbeforeunload = function(e) {
+            if (isSubmitting) return; // Don't warn during normal exam flow
+            return 'Are you sure you want to leave? Your exam progress will be lost.';
+        };
+        
+        // ✅ PREVENT browser back button (but allow normal navigation)
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function() {
+            if (!isSubmitting) {
+                alert('Navigation is disabled during the exam.');
+                window.history.go(1);
+            }
+        };
+    </script>
 </body>
 </html>

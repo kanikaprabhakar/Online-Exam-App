@@ -153,6 +153,7 @@
             <a href="/admin/students" class="nav-btn">Manage Students</a>
             <a href="/questions" class="nav-btn">Manage Questions</a>
             <a href="/admin/exam-attempts" class="nav-btn">View All Exam Attempts</a>
+            <a href="/admin/exam-config" class="btn btn-primary">⚙️ Configure Exam</a>
         </div>
 
         <!-- Register Admin Form -->
