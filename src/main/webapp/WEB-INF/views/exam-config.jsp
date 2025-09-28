@@ -43,13 +43,13 @@
         <div class="info-box">
             <h3>📊 Current Status</h3>
             <p><strong>Exam Status:</strong> 
-                <span class="status-indicator ${config.examEnabled ? 'status-enabled' : 'status-disabled'}">
-                    ${config.examEnabled ? 'ENABLED' : 'DISABLED'}
+                <span class="status-indicator ${examConfig.examEnabled ? 'status-enabled' : 'status-disabled'}">
+                    ${examConfig.examEnabled ? 'ENABLED' : 'DISABLED'}
                 </span>
             </p>
             <p><strong>Questions in Database:</strong> ${totalQuestions}</p>
-            <p><strong>Questions per Exam:</strong> ${config.questionCount}</p>
-            <p><strong>Exam Duration:</strong> ${config.examDurationMinutes} minutes</p>
+            <p><strong>Questions per Exam:</strong> ${examConfig.questionCount}</p>
+            <p><strong>Exam Duration:</strong> ${examConfig.examDuration} minutes</p>
         </div>
 
         <form action="/admin/exam-config/update" method="post">
@@ -80,19 +80,22 @@
                 <input type="number" name="passingMarks" value="${examConfig.passingMarks}" class="form-control"/>
             </div>
             
-            <div class="form-group">
-                <label>Negative Marking:</label>
-                <input type="checkbox" name="negativeMarking" value="true" ${examConfig.negativeMarking ? 'checked' : ''}/>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" name="negativeMarking" value="true" ${examConfig.negativeMarking ? 'checked' : ''} id="negativeMarking"/>
+                <label for="negativeMarking">Enable Negative Marking</label>
                 <input type="hidden" name="negativeMarking" value="false"/>
             </div>
             
-            <div class="form-group">
-                <label>Exam Enabled:</label>
-                <input type="checkbox" name="examEnabled" value="true" ${examConfig.examEnabled ? 'checked' : ''}/>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" name="examEnabled" value="true" ${examConfig.examEnabled ? 'checked' : ''} id="examEnabled"/>
+                <label for="examEnabled">Enable Exam</label>
                 <input type="hidden" name="examEnabled" value="false"/>
             </div>
             
-            <button type="submit" class="btn btn-primary">Update Configuration</button>
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="submit" class="btn btn-primary">Update Configuration</button>
+                <a href="/admin" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
         </form>
     </div>
 </body>

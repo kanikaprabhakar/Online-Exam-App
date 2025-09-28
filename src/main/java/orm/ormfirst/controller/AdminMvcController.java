@@ -288,16 +288,12 @@ public class AdminMvcController {
         
         ExamConfig config = examConfigRepository.getOrCreateConfig();
         
-        // ✅ ADD: Debug logging
-        System.out.println("ExamConfig loaded:");
-        System.out.println("Title: " + config.getExamTitle());
-        System.out.println("Duration: " + config.getExamDuration());
-        System.out.println("Question Count: " + config.getQuestionCount());
-        System.out.println("Total Marks: " + config.getTotalMarks());
-        System.out.println("Enabled: " + config.getExamEnabled());
+        // ✅ ADD: Total questions count
+        Long totalQuestions = questionRepository.count();
         
         model.addAttribute("currentAdmin", currentAdmin);
         model.addAttribute("examConfig", config);
+        model.addAttribute("totalQuestions", totalQuestions); // ✅ ADD: This was missing!
         
         return "exam-config";
     }
