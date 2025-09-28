@@ -52,36 +52,47 @@
             <p><strong>Exam Duration:</strong> ${config.examDurationMinutes} minutes</p>
         </div>
 
-        <form action="/admin/exam-config" method="POST">
+        <form action="/admin/exam-config/update" method="post">
+            <input type="hidden" name="id" value="${examConfig.id}"/>
+            
             <div class="form-group">
-                <label for="examTitle">Exam Title:</label>
-                <input type="text" id="examTitle" name="examTitle" value="${config.examTitle}" required>
+                <label>Exam Title:</label>
+                <input type="text" name="examTitle" value="${examConfig.examTitle}" class="form-control"/>
             </div>
-
+            
             <div class="form-group">
-                <div class="checkbox-group">
-                    <input type="checkbox" id="examEnabled" name="examEnabled" ${config.examEnabled ? 'checked' : ''}>
-                    <label for="examEnabled">Enable Exam (Students can take exam)</label>
-                </div>
+                <label>Duration (minutes):</label>
+                <input type="number" name="examDuration" value="${examConfig.examDuration}" class="form-control"/>
             </div>
-
+            
             <div class="form-group">
-                <label for="questionCount">Number of Questions per Exam:</label>
-                <input type="number" id="questionCount" name="questionCount" value="${config.questionCount}" 
-                       min="1" max="${totalQuestions}" required>
-                <small>Maximum available: ${totalQuestions} questions</small>
+                <label>Total Questions:</label>
+                <input type="number" name="questionCount" value="${examConfig.questionCount}" class="form-control"/>
             </div>
-
+            
             <div class="form-group">
-                <label for="examDurationMinutes">Exam Duration (minutes):</label>
-                <input type="number" id="examDurationMinutes" name="examDurationMinutes" 
-                       value="${config.examDurationMinutes}" min="5" max="180" required>
+                <label>Total Marks:</label>
+                <input type="number" name="totalMarks" value="${examConfig.totalMarks}" class="form-control"/>
             </div>
-
+            
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">💾 Update Configuration</button>
-                <a href="/admin" class="btn btn-secondary">🔙 Back to Admin Dashboard</a>
+                <label>Passing Marks:</label>
+                <input type="number" name="passingMarks" value="${examConfig.passingMarks}" class="form-control"/>
             </div>
+            
+            <div class="form-group">
+                <label>Negative Marking:</label>
+                <input type="checkbox" name="negativeMarking" value="true" ${examConfig.negativeMarking ? 'checked' : ''}/>
+                <input type="hidden" name="negativeMarking" value="false"/>
+            </div>
+            
+            <div class="form-group">
+                <label>Exam Enabled:</label>
+                <input type="checkbox" name="examEnabled" value="true" ${examConfig.examEnabled ? 'checked' : ''}/>
+                <input type="hidden" name="examEnabled" value="false"/>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Update Configuration</button>
         </form>
     </div>
 </body>

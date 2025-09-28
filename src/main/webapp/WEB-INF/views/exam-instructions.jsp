@@ -4,62 +4,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Exam Instructions - ${config.examTitle}</title>
+    <title>Exam Instructions</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .student-info { background: #e7f3ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .instructions { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
-        .instructions h3 { color: #856404; margin-top: 0; }
-        .instructions ul { margin-left: 20px; }
-        .instructions li { margin-bottom: 10px; }
-        .exam-details { background: #d4edda; border: 1px solid #c3e6cb; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
-        .btn { padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; text-decoration: none; display: inline-block; text-align: center; }
-        .btn-success { background: #28a745; color: white; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .warning { color: #dc3545; font-weight: bold; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; color: #4CAF50; }
+        .instructions { margin-bottom: 30px; }
+        .instruction-item { margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 5px; }
+        .exam-details { background-color: #e8f5e9; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .btn { padding: 15px 30px; font-size: 16px; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; margin: 10px; }
+        .btn-primary { background-color: #4CAF50; color: white; }
+        .btn-secondary { background-color: #2196F3; color: white; }
+        .btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📝 ${config.examTitle}</h1>
-            <p>Welcome to the Online Examination System</p>
-        </div>
-
-        <div class="student-info">
-            <h3>👤 Student Information</h3>
-            <p><strong>Name:</strong> ${student.name}</p>
-            <p><strong>Email:</strong> ${student.email}</p>
-            <p><strong>Roll Number:</strong> ${student.rollNumber}</p>
+            <h1>📋 Exam Instructions</h1>
+            <h2>${config.examTitle}</h2>
         </div>
 
         <div class="exam-details">
-            <h3>📋 Exam Details</h3>
-            <p><strong>Exam Title:</strong> ${config.examTitle}</p>
-            <p><strong>Number of Questions:</strong> ${config.questionCount}</p>
-            <p><strong>Time Duration:</strong> ${config.examDurationMinutes} minutes</p>
-            <p><strong>Question Type:</strong> Multiple Choice Questions (MCQ)</p>
+            <h3>📊 Exam Details</h3>
+            <p><strong>📝 Total Questions:</strong> ${config.questionCount}</p>
+            <p><strong>⏱️ Duration:</strong> ${config.examDuration} minutes</p>
+            <p><strong>📋 Total Marks:</strong> ${config.totalMarks}</p>
+            <p><strong>✅ Passing Marks:</strong> ${config.passingMarks}</p>
+            <p><strong>❌ Negative Marking:</strong> ${config.negativeMarking ? 'Yes' : 'No'}</p>
         </div>
 
         <div class="instructions">
-            <h3>⚠️ Important Instructions</h3>
-            <ul>
-                <li><strong>Time Limit:</strong> You have ${config.examDurationMinutes} minutes to complete the exam</li>
-                <li><strong>Questions:</strong> There are ${config.questionCount} questions in total</li>
-                <li><strong>Navigation:</strong> You can move forward through questions, but cannot go back</li>
-                <li><strong>Selection:</strong> Choose one option for each question</li>
-                <li><strong>Submission:</strong> Your exam will be auto-submitted when time expires</li>
-                <li><strong>Browser:</strong> Do not refresh the page or close the browser during exam</li>
-                <li class="warning">⚠️ Once you start, you cannot restart the exam</li>
-            </ul>
+            <h3>📜 Important Instructions</h3>
+            <div class="instruction-item">
+                <strong>1.</strong> Read each question carefully before answering.
+            </div>
+            <div class="instruction-item">
+                <strong>2.</strong> You have ${config.examDuration} minutes to complete the exam.
+            </div>
+            <div class="instruction-item">
+                <strong>3.</strong> Once you start the exam, you cannot pause it.
+            </div>
+            <div class="instruction-item">
+                <strong>4.</strong> Make sure you have a stable internet connection.
+            </div>
+            <div class="instruction-item">
+                <strong>5.</strong> Click "Submit" when you're done or when time runs out.
+            </div>
+            <c:if test="${config.negativeMarking}">
+                <div class="instruction-item" style="background-color: #ffebee; color: #c62828;">
+                    <strong>⚠️ Warning:</strong> Negative marking is enabled. Wrong answers will deduct marks.
+                </div>
+            </c:if>
         </div>
 
         <div style="text-align: center;">
-            <p class="warning">Are you ready to begin the exam?</p>
-            <a href="/exam/question" class="btn btn-success">🚀 Start Exam</a>
-            <a href="/student-dashboard" class="btn btn-secondary">🔙 Back to Dashboard</a>
+            <a href="/student-dashboard" class="btn btn-secondary">🏠 Back to Dashboard</a>
+            <a href="/exam/question" class="btn btn-primary">🚀 Start Exam Now</a>
         </div>
     </div>
 </body>

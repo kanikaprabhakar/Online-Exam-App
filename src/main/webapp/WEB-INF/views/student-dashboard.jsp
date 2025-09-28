@@ -105,7 +105,10 @@
         </div>
 
         <div class="user-info">
-            <a href="/student-profile" class="btn btn-profile">Update Profile</a>
+            <!-- ✅ FIX: Change profile link -->
+            <a href="/student-dashboard/profile" class="btn btn-profile">Update Profile</a>
+            <!-- NOT: href="/student-profile" -->
+            
             <h3>Your Information</h3>
             <div class="info-row">
                 <span class="label">Name:</span>
@@ -151,7 +154,9 @@
             <div class="feature-card">
                 <h3>My Profile</h3>
                 <p>Update your personal information</p>
-                <a href="/student-profile" class="btn btn-profile">Update Profile</a>
+                <!-- ✅ FIX: Change this link too -->
+                <a href="/student-dashboard/profile" class="btn btn-profile">Update Profile</a>
+                <!-- NOT: href="/student-profile" -->
             </div>
         </div>
 
@@ -163,7 +168,8 @@
                     <div class="status-enabled">
                         <p>✅ <strong>${config.examTitle}</strong> is AVAILABLE</p>
                         <p>📊 Questions: ${config.questionCount} (randomized)</p>
-                        <p>⏱️ Duration: ${config.examDurationMinutes} minutes</p>
+                        <!-- ✅ FIX: Change examDurationMinutes to examDuration -->
+                        <p>⏱️ Duration: ${config.examDuration} minutes</p>
                         <a href="/exam/start" class="btn btn-primary">🚀 Start Exam</a>
                     </div>
                 </c:when>

@@ -9,12 +9,13 @@ import java.util.List;
 @Repository
 public interface ExamAttemptRepository extends JpaRepository<ExamAttempt, Long> {
     
-    // ✅ CORRECT: Using actual field names from ExamAttempt entity
+    // ✅ ADD: Missing method
+    List<ExamAttempt> findAllByOrderByAttemptTimeDesc();
+    
+    // ✅ ADD: Find by student email
     List<ExamAttempt> findByStudentEmailOrderByAttemptTimeDesc(String studentEmail);
     
     List<ExamAttempt> findByStudentEmail(String studentEmail);
     
     long countByStudentEmail(String studentEmail);
-    
-    List<ExamAttempt> findAllByOrderByAttemptTimeDesc();
 }

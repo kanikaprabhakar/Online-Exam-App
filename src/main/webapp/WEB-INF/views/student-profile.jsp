@@ -109,7 +109,7 @@
             <div class="success">${success}</div>
         </c:if>
 
-        <form action="/update-student-profile" method="post">
+        <form action="/student-dashboard/profile/update" method="post">
             <div class="form-group">
                 <label for="name">Full Name:</label>
                 <input type="text" id="name" name="name" value="${student.name}" required>

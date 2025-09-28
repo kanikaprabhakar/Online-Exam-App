@@ -4,10 +4,12 @@ import entity.ExamAttempt;
 import entity.Question;
 import entity.Student;
 import entity.ExamConfig;
+import entity.User; // ✅ ADD: Import User entity
 import orm.ormfirst.repository.ExamAttemptRepository;
 import orm.ormfirst.repository.QuestionRepository;
 import orm.ormfirst.repository.StudentRepository;
 import orm.ormfirst.repository.ExamConfigRepository;
+import orm.ormfirst.repository.UserRepository; // ✅ ADD: Import UserRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,39 +41,44 @@ public class ExamController {
 
     @Autowired
     private ExamConfigRepository examConfigRepository;
+    
+    // ✅ ADD: UserRepository injection
+    @Autowired
+    private UserRepository userRepository;
 
     // Start exam
     @GetMapping("/start")
-    @PreAuthorize("hasRole('STUDENT')")
-    public String startExam(Authentication auth, HttpSession session, Model model) {
-        // Get current student
-        String email = auth.getName();
-        Student student = studentRepository.findByEmail(email);
-        
-        if (student == null) {
-            model.addAttribute("error", "Student not found. Please login again.");
-            return "redirect:/login";
-        }
-        
+    public String startExam(Authentication auth, Model model) {
         // Get exam configuration
         ExamConfig config = examConfigRepository.getOrCreateConfig();
         
+        // Check if exam is enabled
         if (!config.isExamEnabled()) {
-            model.addAttribute("error", "Exam is currently disabled by admin.");
-            model.addAttribute("student", student);
-            model.addAttribute("config", config);
+            model.addAttribute("error", "Exam is currently disabled. Please contact administrator.");
             return "student-dashboard";
         }
         
-        // Clear any previous exam session data
-        session.removeAttribute("examQuestions");
-        session.removeAttribute("studentAnswers");
-        session.removeAttribute("currentQuestionIndex");
-        session.removeAttribute("examStartTime");
+        // Get current student
+        String currentStudentEmail = auth.getName();
+        User currentStudent = userRepository.findByEmail(currentStudentEmail);
         
-        // Add data to model
-        model.addAttribute("student", student);
+        // Add all necessary attributes
+        model.addAttribute("student", currentStudent);
         model.addAttribute("config", config);
+        model.addAttribute("examConfig", config); // Alias for compatibility
+        
+        return "exam-instructions";
+    }
+
+    @GetMapping("/instructions")
+    public String examInstructions(Authentication auth, Model model) {
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        String currentStudentEmail = auth.getName();
+        User currentStudent = userRepository.findByEmail(currentStudentEmail);
+        
+        model.addAttribute("student", currentStudent);
+        model.addAttribute("config", config);
+        model.addAttribute("examConfig", config);
         
         return "exam-instructions";
     }

@@ -28,7 +28,8 @@
     <div class="container">
         <div class="header">
             <h1>📊 All Exam Attempts</h1>
-            <a href="/admin-dashboard" class="btn btn-primary">🏠 Back to Dashboard</a>
+            <!-- ✅ FIX: Correct dashboard URL -->
+            <a href="/admin" class="btn btn-primary">🏠 Back to Dashboard</a>
         </div>
 
         <c:choose>

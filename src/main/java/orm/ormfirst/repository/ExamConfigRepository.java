@@ -2,21 +2,28 @@ package orm.ormfirst.repository;
 
 import entity.ExamConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 
 @Repository
-public interface ExamConfigRepository extends JpaRepository<ExamConfig, Long> {
+public interface ExamConfigRepository extends JpaRepository<ExamConfig, Integer> {
     
-    @Query("SELECT e FROM ExamConfig e ORDER BY e.id DESC")
-    ExamConfig findLatestConfig();
-    
+    // ✅ FIX: Correct syntax
     default ExamConfig getOrCreateConfig() {
-        ExamConfig config = findLatestConfig();
-        if (config == null) {
-            config = new ExamConfig(false, 10, "Online Exam", 30);
-            save(config);
+        List<ExamConfig> configs = findAll();
+        if (!configs.isEmpty()) {
+            return configs.get(0);
+        } else {
+            // Create default config with proper values
+            ExamConfig config = new ExamConfig();
+            config.setExamTitle("Java Programming Exam");
+            config.setExamDuration(60);
+            config.setQuestionCount(20);
+            config.setTotalMarks(100);
+            config.setPassingMarks(60);
+            config.setNegativeMarking(false);
+            config.setExamEnabled(true);
+            return save(config);
         }
-        return config;
     }
 }
