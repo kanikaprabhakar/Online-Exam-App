@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/admin")
@@ -223,9 +224,28 @@ public class AdminMvcController {
         String currentAdminEmail = auth.getName();
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
-        // ✅ FIX: Use correct method name
-        List<ExamAttempt> allAttempts = examAttemptRepository.findAllByOrderByAttemptTimeDesc();
-        model.addAttribute("allAttempts", allAttempts);
+        try {
+            // ✅ FIX: Use correct method name and handle empty results
+            List<ExamAttempt> allAttempts = examAttemptRepository.findAllByOrderByAttemptTimeDesc();
+            
+            System.out.println("=== EXAM ATTEMPTS DEBUG ===");
+            System.out.println("Found attempts: " + allAttempts.size());
+            for (ExamAttempt attempt : allAttempts) {
+                System.out.println("Attempt: " + attempt.getStudentEmail() + 
+                                 " - Score: " + attempt.getScore() + 
+                                 "/" + attempt.getTotalQuestions() + 
+                                 " (" + attempt.getPercentage() + "%)");
+            }
+            
+            model.addAttribute("attempts", allAttempts);
+            
+        } catch (Exception e) {
+            System.out.println("Error loading exam attempts: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("attempts", new ArrayList<>());
+            model.addAttribute("error", "Error loading exam attempts: " + e.getMessage());
+        }
+        
         model.addAttribute("currentAdmin", currentAdmin);
         return "admin-exam-attempts";
     }
@@ -235,15 +255,69 @@ public class AdminMvcController {
         String currentAdminEmail = auth.getName();
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
-        model.addAttribute("questions", questionRepository.findAll());
+        List<Question> allQuestions = questionRepository.findAll();
+        ExamConfig examConfig = examConfigRepository.getOrCreateConfig();
+        
+        model.addAttribute("questions", allQuestions);
         model.addAttribute("currentAdmin", currentAdmin);
-        return "admin-questions";
+        model.addAttribute("examConfig", examConfig); // ✅ ADD: For stats section
+        
+        // ✅ ADD: Success message handling
+        String success = (String) model.asMap().get("success");
+        if (success != null) {
+            model.addAttribute("success", success);
+        }
+        
+        return "questions";
     }
 
     @PostMapping("/questions/add")
-    public String addQuestion(@ModelAttribute Question question) {
-        questionRepository.save(question);
-        return "redirect:/admin/questions";
+    public String addQuestion(@RequestParam String question,
+                         @RequestParam String option1,
+                         @RequestParam String option2,
+                         @RequestParam String option3,
+                         @RequestParam String option4,
+                         @RequestParam String correctAnswer,
+                         Model model, Authentication auth) {
+        try {
+            // ✅ BEST: Create Question object manually for better control
+            Question newQuestion = new Question();
+            newQuestion.setQuestion(question.trim());
+            newQuestion.setOption1(option1.trim());
+            newQuestion.setOption2(option2.trim());
+            newQuestion.setOption3(option3.trim());
+            newQuestion.setOption4(option4.trim());
+            newQuestion.setCorrectAnswer(correctAnswer.trim());
+            
+            // ✅ DEBUG: Log what we're saving
+            System.out.println("=== ADDING QUESTION ===");
+            System.out.println("Question: " + newQuestion.getQuestion());
+            System.out.println("Option1: " + newQuestion.getOption1());
+            System.out.println("Option2: " + newQuestion.getOption2());
+            System.out.println("Option3: " + newQuestion.getOption3());
+            System.out.println("Option4: " + newQuestion.getOption4());
+            System.out.println("Correct: " + newQuestion.getCorrectAnswer());
+            
+            Question savedQuestion = questionRepository.save(newQuestion);
+            System.out.println("✅ Question saved with ID: " + savedQuestion.getId());
+            
+            return "redirect:/admin/questions?success=Question added successfully";
+            
+        } catch (Exception e) {
+            System.out.println("❌ Error saving question: " + e.getMessage());
+            e.printStackTrace();
+            
+            // ✅ Return to form with error message
+            String currentAdminEmail = auth.getName();
+            User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+            
+            model.addAttribute("error", "Failed to add question: " + e.getMessage());
+            model.addAttribute("questions", questionRepository.findAll());
+            model.addAttribute("currentAdmin", currentAdmin);
+            model.addAttribute("examConfig", examConfigRepository.getOrCreateConfig());
+            
+            return "questions";
+        }
     }
 
     @GetMapping("/questions/edit/{id}")
@@ -258,21 +332,48 @@ public class AdminMvcController {
     }
 
     @PostMapping("/questions/update")
-    public String updateQuestion(@ModelAttribute Question question) {
-        Question existingQuestion = questionRepository.findById(question.getId()).orElse(null);
+    public String updateQuestion(@RequestParam Integer id,
+                           @RequestParam String question,
+                           @RequestParam String option1,
+                           @RequestParam String option2,
+                           @RequestParam String option3,
+                           @RequestParam String option4,
+                           @RequestParam String correctAnswer,
+                           Model model, Authentication auth) {
+    try {
+        Question existingQuestion = questionRepository.findById(id).orElse(null);
         if (existingQuestion != null) {
-            // ✅ FIX: Use correct method names from Question entity
-            existingQuestion.setQuestion(question.getQuestion()); // ✅ CORRECT: getQuestion() exists
-            existingQuestion.setOption1(question.getOption1());
-            existingQuestion.setOption2(question.getOption2());
-            existingQuestion.setOption3(question.getOption3());
-            existingQuestion.setOption4(question.getOption4());
-            existingQuestion.setCorrectAnswer(question.getCorrectAnswer());
-            // ✅ REMOVE: setMarks() - Question entity doesn't have this field
+            // ✅ DEBUG: Log the update
+            System.out.println("=== UPDATING QUESTION ID: " + id + " ===");
+            System.out.println("Old Question: " + existingQuestion.getQuestion());
+            System.out.println("New Question: " + question);
+            
+            // ✅ Update with individual parameters
+            existingQuestion.setQuestion(question.trim());
+            existingQuestion.setOption1(option1.trim());
+            existingQuestion.setOption2(option2.trim());
+            existingQuestion.setOption3(option3.trim());
+            existingQuestion.setOption4(option4.trim());
+            existingQuestion.setCorrectAnswer(correctAnswer.trim());
+            
             questionRepository.save(existingQuestion);
+            
+            System.out.println("✅ Question updated successfully!");
+            
+            return "redirect:/admin/questions?success=Question updated successfully";
+        } else {
+            System.out.println("❌ Question not found with ID: " + id);
+            return "redirect:/admin/questions?error=Question not found";
         }
-        return "redirect:/admin/questions";
+        
+    } catch (Exception e) {
+        System.out.println("❌ Error updating question: " + e.getMessage());
+        e.printStackTrace();
+        
+        // ✅ Return to questions list with error
+        return "redirect:/admin/questions?error=Failed to update question: " + e.getMessage();
     }
+}
 
     @GetMapping("/questions/delete/{id}")
     public String deleteQuestion(@PathVariable Integer id) {
@@ -280,20 +381,17 @@ public class AdminMvcController {
         return "redirect:/admin/questions";
     }
 
-    // ✅ SINGLE EXAM CONFIG MAPPING - Remove the duplicate!
     @GetMapping("/exam-config")
     public String examConfig(Authentication auth, Model model) {
         String currentAdminEmail = auth.getName();
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
         ExamConfig config = examConfigRepository.getOrCreateConfig();
-        
-        // ✅ ADD: Total questions count
         Long totalQuestions = questionRepository.count();
         
         model.addAttribute("currentAdmin", currentAdmin);
         model.addAttribute("examConfig", config);
-        model.addAttribute("totalQuestions", totalQuestions); // ✅ ADD: This was missing!
+        model.addAttribute("totalQuestions", totalQuestions);
         
         return "exam-config";
     }
@@ -303,16 +401,9 @@ public class AdminMvcController {
         String currentAdminEmail = auth.getName();
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
-        // ✅ ADD: Debug the received data
-        System.out.println("Received config update:");
-        System.out.println("Title: " + config.getExamTitle());
-        System.out.println("Duration: " + config.getExamDuration());
-        System.out.println("Question Count: " + config.getQuestionCount());
-        
         try {
             ExamConfig existingConfig = examConfigRepository.getOrCreateConfig();
             
-            // Update all fields
             existingConfig.setExamTitle(config.getExamTitle());
             existingConfig.setExamDuration(config.getExamDuration());
             existingConfig.setTotalMarks(config.getTotalMarks());
@@ -321,13 +412,10 @@ public class AdminMvcController {
             existingConfig.setNegativeMarking(config.getNegativeMarking());
             existingConfig.setExamEnabled(config.getExamEnabled());
             
-            ExamConfig savedConfig = examConfigRepository.save(existingConfig);
-            
+            examConfigRepository.save(existingConfig);
             model.addAttribute("success", "Exam configuration updated successfully!");
-            model.addAttribute("examConfig", savedConfig);
+            model.addAttribute("examConfig", existingConfig);
         } catch (Exception e) {
-            System.out.println("Error updating config: " + e.getMessage());
-            e.printStackTrace();
             model.addAttribute("error", "Error updating configuration: " + e.getMessage());
             model.addAttribute("examConfig", config);
         }

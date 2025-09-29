@@ -18,25 +18,39 @@
         .score-bad { color: #dc3545; font-weight: bold; }
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; }
         .btn-primary { background: #007bff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
         .no-attempts { text-align: center; padding: 40px; color: #6c757d; }
         .stats-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #007bff; }
         .stat-number { font-size: 24px; font-weight: bold; color: #007bff; }
+        .alert { padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>📊 All Exam Attempts</h1>
-            <!-- ✅ FIX: Correct dashboard URL -->
-            <a href="/admin" class="btn btn-primary">🏠 Back to Dashboard</a>
+            <div>
+                <a href="/admin" class="btn btn-primary">🏠 Dashboard</a>
+                <a href="/admin/students" class="btn btn-secondary">👥 Students</a>
+            </div>
         </div>
 
+        <!-- ✅ ADD: Error handling -->
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger">
+                <strong>⚠️ Error:</strong> ${error}
+            </div>
+        </c:if>
+
+        <!-- ✅ FIX: Check if attempts exists and is not null -->
         <c:choose>
-            <c:when test="${empty attempts}">
+            <c:when test="${empty attempts or attempts.size() == 0}">
                 <div class="no-attempts">
                     <h3>📝 No Exam Attempts Found</h3>
                     <p>No students have taken any exams yet.</p>
+                    <p><a href="/admin/exam-config" class="btn btn-primary">⚙️ Configure Exam</a></p>
                 </div>
             </c:when>
             <c:otherwise>
@@ -56,14 +70,13 @@
                             </c:forEach>
                             ${passedCount}
                         </div>
-                        <div>Passed</div>
+                        <div>Passed (≥60%)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">
-                            <c:set var="failedCount" value="${attempts.size() - passedCount}"/>
-                            ${failedCount}
+                            ${attempts.size() - passedCount}
                         </div>
-                        <div>Failed</div>
+                        <div>Failed (<60%)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">
@@ -81,30 +94,38 @@
                 <table class="attempts-table">
                     <thead>
                         <tr>
-                            <th>Sr. No.</th>
+                            <th>#</th>
                             <th>Student Email</th>
-                            <th>Attempt Date/Time</th>
+                            <th>Attempt Date & Time</th>
                             <th>Score</th>
                             <th>Total Questions</th>
                             <th>Percentage</th>
                             <th>Result</th>
+                            <th>Grade</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="attempt" items="${attempts}" varStatus="status">
                             <tr>
                                 <td>${status.index + 1}</td>
-                                <td>${attempt.studentEmail}</td>
                                 <td>
-                                    <!-- ✅ FIX: Handle LocalDateTime properly -->
-                                    <c:set var="attemptTimeStr" value="${attempt.attemptTime.toString()}" />
-                                    <c:set var="dateOnly" value="${attemptTimeStr.substring(0, 10)}" />
-                                    <c:set var="timeOnly" value="${attemptTimeStr.substring(11, 19)}" />
-                                    
-                                    <div style="font-weight: bold;">${dateOnly}</div>
-                                    <div style="color: #666; font-size: 12px;">${timeOnly}</div>
+                                    <strong>${attempt.studentEmail}</strong>
                                 </td>
-                                <td>${attempt.score}</td>
+                                <td>
+                                    <!-- ✅ FIX: Better date/time formatting -->
+                                    <c:choose>
+                                        <c:when test="${not empty attempt.attemptTime}">
+                                            <fmt:formatDate value="${attempt.attemptTime}" pattern="dd/MM/yyyy" var="dateStr"/>
+                                            <fmt:formatDate value="${attempt.attemptTime}" pattern="HH:mm:ss" var="timeStr"/>
+                                            <div style="font-weight: bold;">${dateStr}</div>
+                                            <div style="color: #666; font-size: 12px;">${timeStr}</div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div style="color: #999;">No date available</div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td><strong>${attempt.score}</strong></td>
                                 <td>${attempt.totalQuestions}</td>
                                 <td>
                                     <span class="${attempt.percentage >= 60 ? 'score-good' : 'score-bad'}">
@@ -113,6 +134,9 @@
                                 </td>
                                 <td>
                                     <c:choose>
+                                        <c:when test="${attempt.percentage >= 80}">
+                                            <span class="score-good">🏆 EXCELLENT</span>
+                                        </c:when>
                                         <c:when test="${attempt.percentage >= 60}">
                                             <span class="score-good">✅ PASSED</span>
                                         </c:when>
@@ -121,12 +145,30 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${attempt.percentage >= 90}">A+</c:when>
+                                        <c:when test="${attempt.percentage >= 80}">A</c:when>
+                                        <c:when test="${attempt.percentage >= 70}">B</c:when>
+                                        <c:when test="${attempt.percentage >= 60}">C</c:when>
+                                        <c:when test="${attempt.percentage >= 50}">D</c:when>
+                                        <c:otherwise>F</c:otherwise>
+                                    </c:choose>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
             </c:otherwise>
         </c:choose>
+
+        <!-- Navigation -->
+        <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px;">
+            <a href="/admin" class="btn btn-primary">🏠 Admin Dashboard</a>
+            <a href="/admin/students" class="btn btn-secondary">👥 Manage Students</a>
+            <a href="/admin/questions" class="btn btn-secondary">📝 Manage Questions</a>
+            <a href="/admin/exam-config" class="btn btn-secondary">⚙️ Exam Configuration</a>
+        </div>
     </div>
 </body>
 </html>

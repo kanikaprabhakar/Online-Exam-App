@@ -3,7 +3,6 @@ package entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
 import java.util.List;
 
 @Entity
@@ -11,14 +10,14 @@ import java.util.List;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id; // ✅ FIX: Change from int to Integer
 
     @NotBlank(message = "Question text is required")
     @Size(min = 5, max = 255)
     private String question;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private java.util.List<Answer> answers;
+    private List<Answer> answers;
 
     // Objective question fields
     @Column(name = "option1")
@@ -34,15 +33,15 @@ public class Question {
     private String option4;
 
     @Column(name = "correct_answer")
-    private String correctAnswer; // ✅ Changed from Integer to String - stores actual answer text
+    private String correctAnswer;
 
     @ManyToOne
     @JoinColumn(name = "exam_id")
     private Exam exam;
 
-    // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    // ✅ FIX: Update getter/setter for Integer
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getQuestion() { return question; }
     public void setQuestion(String question) { this.question = question; }
@@ -62,8 +61,8 @@ public class Question {
     public String getOption4() { return option4; }
     public void setOption4(String option4) { this.option4 = option4; }
 
-    public String getCorrectAnswer() { return correctAnswer; } // ✅ Changed return type
-    public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; } // ✅ Changed param type
+    public String getCorrectAnswer() { return correctAnswer; }
+    public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; }
 
     public Exam getExam() { return exam; }
     public void setExam(Exam exam) { this.exam = exam; }
