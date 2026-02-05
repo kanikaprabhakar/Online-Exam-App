@@ -103,6 +103,12 @@
             <h1 class="welcome">Welcome, ${student.name}!</h1>
             <a href="/logout" class="btn btn-logout">Logout</a>
         </div>
+        
+        <c:if test="${success != null}">
+            <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                ✅ ${success}
+            </div>
+        </c:if>
 
         <div class="user-info">
             <!-- ✅ FIX: Change profile link -->
@@ -136,7 +142,15 @@
             <div class="feature-card">
                 <h3>Take Exam</h3>
                 <p>Start your online examination</p>
-                <a href="/exam/start" class="btn">Start Exam</a>
+                <c:choose>
+                    <c:when test="${hasAlreadyTakenExam}">
+                        <button class="btn" disabled style="background-color: #ccc; cursor: not-allowed;">Already Taken</button>
+                        <p style="color: #666; font-size: 12px; margin-top: 10px;">You can only take the exam once. Check your results below.</p>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="/exam/start" class="btn">Start Exam</a>
+                    </c:otherwise>
+                </c:choose>
             </div>
             
             <div class="feature-card">
@@ -147,8 +161,8 @@
             
             <div class="feature-card">
                 <h3>Practice Mode</h3>
-                <p>Practice with sample questions</p>
-                <a href="/exam/start" class="btn">Practice</a>
+                <p>Practice with sample questions (unlimited attempts)</p>
+                <a href="/exam/practice" class="btn">Practice</a>
             </div>
             
             <div class="feature-card">

@@ -112,17 +112,20 @@
         <form action="/student-dashboard/profile/update" method="post">
             <div class="form-group">
                 <label for="name">Full Name:</label>
-                <input type="text" id="name" name="name" value="${student.name}" required>
+                <input type="text" id="name" name="name" value="${student.name}" disabled readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                <div class="password-note">Cannot be changed</div>
             </div>
             
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="${student.email}" required>
+                <input type="email" id="email" name="email" value="${student.email}" disabled readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                <div class="password-note">Cannot be changed</div>
             </div>
             
             <div class="form-group">
                 <label for="rollNumber">Roll Number:</label>
-                <input type="text" id="rollNumber" name="rollNumber" value="${student.rollNumber}" required>
+                <input type="text" id="rollNumber" name="rollNumber" value="${student.rollNumber}" disabled readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                <div class="password-note">Cannot be changed</div>
             </div>
             
             <div class="form-group">
@@ -133,12 +136,6 @@
             <div class="form-group">
                 <label for="address">Address:</label>
                 <input type="text" id="address" name="address" value="${student.address}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">New Password:</label>
-                <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
-                <div class="password-note">Only enter a new password if you want to change it</div>
             </div>
             
             <div style="text-align: center; margin-top: 30px;">

@@ -34,6 +34,10 @@
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
+        .result-card.failed {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
         .score-circle {
             width: 120px;
             height: 120px;
@@ -106,11 +110,20 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎉 Exam Completed!</h1>
-            <p>Congratulations ${student.name}, you have successfully completed the exam.</p>
+            <h1>${isPractice ? '📝 Practice Completed!' : '🎉 Exam Completed!'}</h1>
+            <p>
+                <c:choose>
+                    <c:when test="${isPractice}">
+                        ${student.name}, you have completed the practice session. This score will not be recorded.
+                    </c:when>
+                    <c:otherwise>
+                        Congratulations ${student.name}, you have successfully completed the exam.
+                    </c:otherwise>
+                </c:choose>
+            </p>
         </div>
 
-        <div class="result-card">
+        <div class="result-card ${passed ? '' : 'failed'}">
             <h2>Your Score</h2>
             <div class="score-circle">
                 <div class="score-text">
@@ -191,6 +204,9 @@
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
+            <c:if test="${isPractice}">
+                <a href="/exam/practice" class="btn btn-secondary">🔄 Practice Again</a>
+            </c:if>
             <a href="/exam/results" class="btn btn-secondary">📊 View All Results</a>
             <a href="/student-dashboard" class="btn btn-primary">🏠 Back to Dashboard</a>
         </div>

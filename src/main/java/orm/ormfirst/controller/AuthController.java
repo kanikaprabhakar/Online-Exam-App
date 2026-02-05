@@ -178,7 +178,7 @@ public class AuthController {
         cookie.setMaxAge(24 * 60 * 60); // 24 hours
         response.addCookie(cookie);
         
-        return "redirect:/student/dashboard";
+        return "redirect:/student-dashboard";
     }
 
     // NEW: Admin signup
@@ -218,7 +218,7 @@ public class AuthController {
         cookie.setMaxAge(24 * 60 * 60); // 24 hours
         response.addCookie(cookie);
         
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin";
     }
 
     @GetMapping("/logout")  // ✅ Changed from /auth/logout to /logout

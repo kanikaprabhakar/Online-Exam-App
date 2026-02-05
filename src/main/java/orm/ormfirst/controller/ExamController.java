@@ -46,7 +46,7 @@ public class ExamController {
 
     // Start exam
     @GetMapping("/start")
-    public String startExam(Authentication auth, Model model) {
+    public String startExam(Authentication auth, Model model, HttpSession session) {
         // Get exam configuration
         ExamConfig config = examConfigRepository.getOrCreateConfig();
         
@@ -58,12 +58,46 @@ public class ExamController {
         
         // Get current student
         String currentStudentEmail = auth.getName();
-        User currentStudent = userRepository.findByEmail(currentStudentEmail);
+        Student student = studentRepository.findByEmail(currentStudentEmail);
+        
+        // Check if student has already taken the exam
+        List<ExamAttempt> existingAttempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(currentStudentEmail);
+        if (!existingAttempts.isEmpty()) {
+            model.addAttribute("error", "You have already taken this exam. You can only take it once.");
+            model.addAttribute("student", student);
+            return "student-dashboard";
+        }
+        
+        // Mark this as a real exam (not practice)
+        session.setAttribute("isPracticeMode", false);
         
         // Add all necessary attributes
-        model.addAttribute("student", currentStudent);
+        model.addAttribute("student", student);
         model.addAttribute("config", config);
         model.addAttribute("examConfig", config); // Alias for compatibility
+        
+        return "exam-instructions";
+    }
+    
+    // Practice mode - can be taken multiple times
+    @GetMapping("/practice")
+    @PreAuthorize("hasRole('STUDENT')")
+    public String startPractice(Authentication auth, Model model, HttpSession session) {
+        // Get exam configuration
+        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        
+        // Get current student
+        String currentStudentEmail = auth.getName();
+        Student student = studentRepository.findByEmail(currentStudentEmail);
+        
+        // Mark this as practice mode
+        session.setAttribute("isPracticeMode", true);
+        
+        // Add all necessary attributes
+        model.addAttribute("student", student);
+        model.addAttribute("config", config);
+        model.addAttribute("examConfig", config);
+        model.addAttribute("isPractice", true);
         
         return "exam-instructions";
     }
@@ -196,6 +230,11 @@ public class ExamController {
         @SuppressWarnings("unchecked")
         List<String> studentAnswers = (List<String>) session.getAttribute("studentAnswers");
         LocalDateTime examStartTime = (LocalDateTime) session.getAttribute("examStartTime");
+        Boolean isPracticeMode = (Boolean) session.getAttribute("isPracticeMode");
+        
+        if (isPracticeMode == null) {
+            isPracticeMode = false;
+        }
         
         if (examQuestions == null || studentAnswers == null) {
             model.addAttribute("error", "No exam data found. Please start the exam again.");
@@ -215,20 +254,23 @@ public class ExamController {
         int totalQuestions = examQuestions.size();
         double percentage = (double) correctAnswers / totalQuestions * 100;
         
-        // Save exam attempt
-        ExamAttempt attempt = new ExamAttempt();
-        attempt.setStudentEmail(student.getEmail());
-        attempt.setScore(correctAnswers);
-        attempt.setTotalQuestions(totalQuestions);
-        attempt.setPercentage(percentage);
-        attempt.setAttemptTime(examStartTime != null ? examStartTime : LocalDateTime.now());
-        examAttemptRepository.save(attempt);
+        // Only save exam attempt if NOT in practice mode
+        if (!isPracticeMode) {
+            ExamAttempt attempt = new ExamAttempt();
+            attempt.setStudentEmail(student.getEmail());
+            attempt.setScore(correctAnswers);
+            attempt.setTotalQuestions(totalQuestions);
+            attempt.setPercentage(percentage);
+            attempt.setAttemptTime(examStartTime != null ? examStartTime : LocalDateTime.now());
+            examAttemptRepository.save(attempt);
+        }
         
         // Clear session data
         session.removeAttribute("examQuestions");
         session.removeAttribute("studentAnswers");
         session.removeAttribute("currentQuestionIndex");
         session.removeAttribute("examStartTime");
+        session.removeAttribute("isPracticeMode");
         
         // Add results to model
         model.addAttribute("student", student);
@@ -236,10 +278,12 @@ public class ExamController {
         model.addAttribute("totalQuestions", totalQuestions);
         model.addAttribute("percentage", Math.round(percentage * 100.0) / 100.0);
         model.addAttribute("passed", percentage >= 60);
+        model.addAttribute("isPractice", isPracticeMode);
         
         System.out.println("=== EXAM SUBMITTED ===");
         System.out.println("Student: " + student.getName());
         System.out.println("Score: " + correctAnswers + "/" + totalQuestions + " (" + percentage + "%)");
+        System.out.println("Practice Mode: " + isPracticeMode);
         
         return "exam-result";
     }

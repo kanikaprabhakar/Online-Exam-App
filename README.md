@@ -1,22 +1,22 @@
-# Online Exam App - Microservices Architecture
+# Online Exam App
 
-A **Spring Boot microservices application** for managing and taking online exams, with role-based access for admins and students. Built with **Spring Cloud** and **Eureka Service Discovery**.
+A **Spring Boot application** for managing and taking online exams, with role-based access for admins and students. Features JWT-based authentication, a responsive web interface, and MySQL database.
 
 ## Architecture
 
-This application follows a **microservices architecture** pattern:
+This application is a monolithic Spring Boot application with:
 
-- **API Gateway**: Routes requests and handles authentication
-- **Service Discovery**: Eureka Server for service registration and discovery
 - **Authentication Service**: JWT-based authentication with role management
-- **Exam Service**: Core exam functionality (questions, attempts, scoring)
-- **User Management Service**: Admin and student registration/management
+- **Exam Management**: Core exam functionality (questions, attempts, scoring)
+- **User Management**: Admin and student registration/management
+- **REST API**: Full API for all operations
+- **Web Frontend**: JSP-based UI for all features
 
 ## Features
 
 - **User Registration & Login**: JWT-based authentication with admin and student roles
-- **Service Discovery**: Eureka-based microservices with automatic service registration
-- **API Gateway**: Centralized routing and authentication
+- **REST API**: Full RESTful API for programmatic access
+- **Web Frontend**: Complete web interface via JSP pages
 - **Admin Dashboard**:
   - Add objective questions (with 4 options and correct answer **as answer text**, e.g., "jk") via REST API or web UI
   - Enable/disable exam and set number of questions
@@ -31,75 +31,67 @@ This application follows a **microservices architecture** pattern:
 - **JSP Web Frontend**: All main features available via JSP pages under `/WEB-INF/views/`
 - **Security**: JWT tokens with HTTP-only cookies, role-based authorization
 
-## Microservices Components
+## Application Components
 
-### 1. Eureka Service Registry
-- **Purpose**: Service discovery and registration
-- **Default Port**: 8761
-- **URL**: http://localhost:8761
-
-### 2. API Gateway (Main Application)
-- **Purpose**: Routes requests, handles authentication, serves web UI
+### Main Application
+- **Purpose**: Handles authentication, exam management, and serves web UI
 - **Port**: 8080
-- **Service Name**: `ONLINE-EXAM-GATEWAY`
 - **Features**:
-  - JWT authentication filter
-  - Role-based access control
-  - JSP web frontend
-  - API routing
+  - JWT authentication with HTTP-only cookies
+  - Role-based access control (Admin/Student)
+  - JSP web frontend with responsive design
+  - RESTful API endpoints
+  - MySQL database integration
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 8+
-- Maven
-- MySQL
-- Eureka Server (for service discovery)
+- Java 8 or higher
+- MySQL 5.7 or higher
+- Maven 3.6+ (included in this project)
 
 ### Setup
 
-1. **Start Eureka Server**
-   ```bash
-   # Start Eureka Server on port 8761
-   # (You should have a separate Eureka server project)
-   ```
-
-2. **Clone the repository**  
+1. **Clone the repository**  
    ```bash
    git clone https://github.com/kanikaprabhakar/Online-Exam-App.git
+   cd Online-Exam-App
    ```
 
-3. **Configure MySQL**  
+2. **Configure MySQL**  
    - Create a database named `EXAM_APP`
    - Update credentials in `src/main/resources/application.properties`:
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/EXAM_APP
-   spring.datasource.username=your_username
-   spring.datasource.password=your_password
+   spring.datasource.username=root
+   spring.datasource.password=root
    ```
 
-4. **Configure Eureka**  
-   ```properties
-   eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-   spring.application.name=online-exam-gateway
-   ```
-
-5. **Build the project**  
+3. **Build the project**  
    ```bash
-   mvn clean install
+   # Windows
+   .\apache-maven-3.9.11\bin\mvn.cmd clean install
+   
+   # Linux/Mac
+   ./apache-maven-3.9.11/bin/mvn clean install
    ```
 
-6. **Run the application**  
+4. **Run the application**  
    ```bash
+   # Windows
+   .\apache-maven-3.9.11\bin\mvn.cmd spring-boot:run
+   
+   # Linux/Mac
+   ./apache-maven-3.9.11/bin/mvn spring-boot:run
+   
+   # Or use system Maven if installed
    mvn spring-boot:run
-   # or
-   java -jar target/OnlineExamApp2-0.0.1-SNAPSHOT.war
    ```
 
-7. **Verify Service Registration**
-   - Check Eureka Dashboard: http://localhost:8761
-   - Should see `ONLINE-EXAM-GATEWAY` registered
+5. **Access the application**
+   - Open browser and go to: http://localhost:8080
+   - Login page: http://localhost:8080/login
 
 ## Usage
 
@@ -193,27 +185,29 @@ This application follows a **microservices architecture** pattern:
 - `GET /exam/submit` — Submit entire exam
 - `GET /exam/results` — View exam results
 
-## Microservices Configuration
+## Configuration
 
 ### Application Properties
+Edit `src/main/resources/application.properties` to configure:
+
 ```properties
-# Application name for Eureka
-spring.application.name=online-exam-gateway
-
-# Eureka configuration
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-eureka.instance.prefer-ip-address=true
-
 # Server configuration  
 server.port=8080
 
 # Database configuration
 spring.datasource.url=jdbc:mysql://localhost:3306/EXAM_APP
+spring.datasource.username=root
+spring.datasource.password=root
 spring.jpa.hibernate.ddl-auto=update
 
 # JWT configuration
-jwt.secret=your-secret-key
+jwt.secret=mySecretKey12345678901234567890123456789012345678901234567890
 jwt.expiration=86400000
+
+# Logging (to reduce noise during startup)
+logging.level.root=WARN
+logging.level.orm.ormfirst=INFO
+logging.level.org.springframework.boot=INFO
 ```
 
 ## Project Structure

@@ -3,9 +3,11 @@ package orm.ormfirst.controller;
 import Entity.ExamConfig;
 import Entity.User;
 import Entity.Student;
+import Entity.ExamAttempt;
 import orm.ormfirst.repository.ExamConfigRepository;
 import orm.ormfirst.repository.UserRepository;
 import orm.ormfirst.repository.StudentRepository;
+import orm.ormfirst.repository.ExamAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/student-dashboard")
@@ -27,9 +32,12 @@ public class StudentDashboardController {
     
     @Autowired
     private ExamConfigRepository examConfigRepository;
+    
+    @Autowired
+    private ExamAttemptRepository examAttemptRepository;
 
     @GetMapping("")
-    public String studentDashboard(Authentication auth, Model model) {
+    public String studentDashboard(Authentication auth, Model model, @RequestParam(required = false) String success) {
         String currentStudentEmail = auth.getName();
         User currentUser = userRepository.findByEmail(currentStudentEmail);
         
@@ -50,9 +58,18 @@ public class StudentDashboardController {
         // Get exam configuration
         ExamConfig config = examConfigRepository.getOrCreateConfig();
         
+        // Check if student has already taken exam
+        List<ExamAttempt> existingAttempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(currentStudentEmail);
+        boolean hasAlreadyTakenExam = !existingAttempts.isEmpty();
+        
         model.addAttribute("student", currentStudent); // ✅ Now it's a Student object
         model.addAttribute("user", currentUser); // ✅ Also add User for other uses
         model.addAttribute("config", config);
+        model.addAttribute("hasAlreadyTakenExam", hasAlreadyTakenExam);
+        
+        if (success != null) {
+            model.addAttribute("success", success);
+        }
         
         return "student-dashboard";
     }
@@ -79,34 +96,25 @@ public class StudentDashboardController {
         return "student-profile";
     }
     
-    // ✅ MAKE SURE: Profile update mapping exists
+    // ✅ MAKE SURE: Profile update mapping exists - only phone and address
     @PostMapping("/profile/update")
     public String updateStudentProfile(@ModelAttribute Student student, Authentication auth, Model model) {
         String currentStudentEmail = auth.getName();
-        User currentUser = userRepository.findByEmail(currentStudentEmail);
-        
-        student.setEmail(currentStudentEmail);
         
         try {
             Student existingStudent = studentRepository.findByEmail(currentStudentEmail);
             if (existingStudent != null) {
-                existingStudent.setName(student.getName());
-                existingStudent.setRollNumber(student.getRollNumber());
+                // Only update phone and address
                 existingStudent.setPhone(student.getPhone());
                 existingStudent.setAddress(student.getAddress());
                 studentRepository.save(existingStudent);
-                model.addAttribute("student", existingStudent);
-            } else {
-                Student savedStudent = studentRepository.save(student);
-                model.addAttribute("student", savedStudent);
             }
             model.addAttribute("success", "Profile updated successfully!");
         } catch (Exception e) {
             model.addAttribute("error", "Error updating profile: " + e.getMessage());
-            model.addAttribute("student", student);
         }
         
-        model.addAttribute("user", currentUser);
-        return "student-profile";
+        // Redirect to dashboard with success message
+        return "redirect:/student-dashboard?success=Profile+updated+successfully";
     }
 }

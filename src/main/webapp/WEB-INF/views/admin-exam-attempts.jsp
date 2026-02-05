@@ -112,13 +112,12 @@
                                     <strong>${attempt.studentEmail}</strong>
                                 </td>
                                 <td>
-                                    <!-- ✅ FIX: Better date/time formatting -->
+                                    <!-- ✅ FIX: Display LocalDateTime directly without fmt:formatDate -->
                                     <c:choose>
                                         <c:when test="${not empty attempt.attemptTime}">
-                                            <fmt:formatDate value="${attempt.attemptTime}" pattern="dd/MM/yyyy" var="dateStr"/>
-                                            <fmt:formatDate value="${attempt.attemptTime}" pattern="HH:mm:ss" var="timeStr"/>
-                                            <div style="font-weight: bold;">${dateStr}</div>
-                                            <div style="color: #666; font-size: 12px;">${timeStr}</div>
+                                            <div style="font-weight: bold; font-size: 12px; word-break: break-word;">
+                                                ${attempt.attemptTime}
+                                            </div>
                                         </c:when>
                                         <c:otherwise>
                                             <div style="color: #999;">No date available</div>
