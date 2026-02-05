@@ -1,8 +1,8 @@
 package orm.ormfirst.controller;
 
-import entity.ExamConfig;
-import entity.User;
-import entity.Student;
+import Entity.ExamConfig;
+import Entity.User;
+import Entity.Student;
 import orm.ormfirst.repository.ExamConfigRepository;
 import orm.ormfirst.repository.UserRepository;
 import orm.ormfirst.repository.StudentRepository;

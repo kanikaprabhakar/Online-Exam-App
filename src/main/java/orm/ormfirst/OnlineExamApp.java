@@ -11,8 +11,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 
 @SpringBootApplication
-@EnableEurekaClient
-@EntityScan(basePackages = {"entity"})
+// @EnableEurekaClient  // Disabled - no Eureka Server running
+@EntityScan(basePackages = {"Entity"})
 @EnableJpaRepositories(basePackages = {"orm.ormfirst.repository"})
 @ComponentScan(basePackages = {"orm.ormfirst"})
 public class OnlineExamApp {

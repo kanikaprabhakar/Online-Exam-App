@@ -1,6 +1,6 @@
 package orm.ormfirst.controller;
 
-import entity.Student;
+import Entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import orm.ormfirst.repository.StudentRepository;

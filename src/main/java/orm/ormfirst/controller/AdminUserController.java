@@ -1,7 +1,7 @@
 
 package orm.ormfirst.controller;
 
-import entity.User;
+import Entity.User;
 import orm.ormfirst.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,11 +1,10 @@
 package orm.ormfirst.security;
 
-import entity.Student;
-import entity.User;
+import Entity.Student;
+import Entity.User;
 import orm.ormfirst.repository.StudentRepository;
 import orm.ormfirst.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

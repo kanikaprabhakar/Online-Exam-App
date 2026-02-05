@@ -1,6 +1,6 @@
 package orm.ormfirst.controller;
 
-import entity.Question;
+import Entity.Question;
 import orm.ormfirst.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

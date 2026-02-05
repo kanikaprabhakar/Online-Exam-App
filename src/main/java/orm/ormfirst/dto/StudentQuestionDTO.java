@@ -1,5 +1,7 @@
 package orm.ormfirst.dto;
 
+import Entity.Question;
+
 public class StudentQuestionDTO {
     public Integer id;
     public String question;
@@ -17,7 +19,7 @@ public class StudentQuestionDTO {
         this.option4 = option4;
     }
 
-    public StudentQuestionDTO(entity.Question q) {
+    public StudentQuestionDTO(Question q) {
         this(q.getId(), q.getQuestion(), q.getOption1(), q.getOption2(), q.getOption3(), q.getOption4());
     }
 }

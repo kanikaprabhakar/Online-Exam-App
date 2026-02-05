@@ -1,6 +1,6 @@
 package orm.ormfirst.repository;
 
-import entity.ExamConfig;
+import Entity.ExamConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

@@ -1,6 +1,6 @@
 package orm.ormfirst.repository;
 
-import entity.ExamAttempt;
+import Entity.ExamAttempt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

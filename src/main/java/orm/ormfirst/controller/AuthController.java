@@ -1,7 +1,7 @@
 package orm.ormfirst.controller;
 
-import entity.Student;
-import entity.User;
+import Entity.Student;
+import Entity.User;
 import orm.ormfirst.repository.StudentRepository;
 import orm.ormfirst.repository.UserRepository;
 import orm.ormfirst.security.JwtUtil;
@@ -149,6 +149,7 @@ public class AuthController {
                         @RequestParam String rollNumber,
                         @RequestParam String phone,
                         @RequestParam String address,
+                        HttpServletResponse response,
                         Model model) {
         
         // Check if student already exists
@@ -167,10 +168,17 @@ public class AuthController {
         student.setAddress(address);
         student.setRole("STUDENT");
 
-        studentRepository.save(student);
+        Student savedStudent = studentRepository.save(student);
         
-        model.addAttribute("success", "Registration successful! Please login.");
-        return "login";
+        // Auto-login after signup
+        String token = jwtUtil.generateToken(email, "STUDENT");
+        Cookie cookie = new Cookie("authToken", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60); // 24 hours
+        response.addCookie(cookie);
+        
+        return "redirect:/student/dashboard";
     }
 
     // NEW: Admin signup
@@ -179,6 +187,7 @@ public class AuthController {
                              @RequestParam String email,
                              @RequestParam String password,
                              @RequestParam String adminCode,
+                             HttpServletResponse response,
                              Model model) {
         
         String SECRET_ADMIN_CODE = "ADMIN2024";
@@ -201,8 +210,15 @@ public class AuthController {
 
         userRepository.save(admin);
         
-        model.addAttribute("success", "Admin registration successful! Please login.");
-        return "login";
+        // Auto-login after admin signup
+        String token = jwtUtil.generateToken(email, "ADMIN");
+        Cookie cookie = new Cookie("authToken", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60); // 24 hours
+        response.addCookie(cookie);
+        
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/logout")  // ✅ Changed from /auth/logout to /logout

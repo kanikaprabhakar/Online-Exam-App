@@ -1,13 +1,11 @@
 package orm.ormfirst.controller;
 
-import entity.Question;
+import Entity.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import orm.ormfirst.repository.QuestionRepository;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import orm.ormfirst.controller.QuestionLimitController;
 import java.util.Random;
 
 import java.util.List;

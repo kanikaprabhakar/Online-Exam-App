@@ -1,10 +1,10 @@
 package orm.ormfirst.controller;
 
-import entity.Student;
-import entity.User;
-import entity.ExamAttempt;
-import entity.ExamConfig;
-import entity.Question;
+import Entity.Student;
+import Entity.User;
+import Entity.ExamAttempt;
+import Entity.ExamConfig;
+import Entity.Question;
 import orm.ormfirst.repository.StudentRepository;
 import orm.ormfirst.repository.UserRepository;
 import orm.ormfirst.repository.ExamAttemptRepository;

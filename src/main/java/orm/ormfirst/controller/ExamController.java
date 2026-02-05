@@ -1,10 +1,10 @@
 package orm.ormfirst.controller;
 
-import entity.ExamAttempt;
-import entity.Question;
-import entity.Student;
-import entity.ExamConfig;
-import entity.User; // ✅ ADD: Import User entity
+import Entity.ExamAttempt;
+import Entity.Question;
+import Entity.Student;
+import Entity.ExamConfig;
+import Entity.User; // ✅ ADD: Import User entity
 import orm.ormfirst.repository.ExamAttemptRepository;
 import orm.ormfirst.repository.QuestionRepository;
 import orm.ormfirst.repository.StudentRepository;
@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
