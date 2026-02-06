@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Admin Profile - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -169,6 +169,18 @@
             font-style: italic;
         }
 
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
+
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -211,20 +223,20 @@
             <div class="success">${success}</div>
         </c:if>
 
-        <form action="/admin/update-profile" method="post">
+        <form action="/admin/update-profile" method="post" data-validate>
             <div class="form-group">
                 <label for="name">Full Name:</label>
-                <input type="text" id="name" name="name" value="${currentAdmin.name}" required>
+                <input type="text" id="name" name="name" value="${currentAdmin.name}" required data-validate="required">
             </div>
             
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="${currentAdmin.email}" required>
+                <input type="email" id="email" name="email" value="${currentAdmin.email}" required data-validate="email">
             </div>
             
             <div class="form-group">
                 <label for="password">New Password:</label>
-                <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
+                <input type="password" id="password" name="password" placeholder="Leave blank to keep current password" data-validate="password" data-optional="true">
                 <div class="password-note">Only enter a new password if you want to change it</div>
             </div>
             
@@ -234,5 +246,6 @@
             </div>
         </form>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

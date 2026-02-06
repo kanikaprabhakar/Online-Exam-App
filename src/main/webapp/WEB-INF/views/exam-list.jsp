@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Manage Exams - Evalora Admin</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {

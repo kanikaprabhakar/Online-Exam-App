@@ -6,7 +6,7 @@
 <html>
 <head>
     <title>Exam Results History - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }

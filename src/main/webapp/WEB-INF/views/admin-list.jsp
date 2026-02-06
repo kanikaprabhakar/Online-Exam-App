@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Manage Admins - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -369,6 +369,18 @@
             background-color: #666;
             border-color: #999;
         }
+
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -392,18 +404,18 @@
             <!-- Register Admin Form -->
             <div class="form-section">
                 <h2>Register New Admin</h2>
-                <form action="/admin/register" method="post">
+                <form action="/admin/register" method="post" data-validate>
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" placeholder="John Doe" required>
+                        <input type="text" id="name" name="name" placeholder="John Doe" required data-validate="required">
                     </div>
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="admin@evalora.com" required>
+                        <input type="email" id="email" name="email" placeholder="admin@evalora.com" required data-validate="email">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required data-validate="password">
                     </div>
                     <button type="submit">Register Admin</button>
                 </form>
@@ -413,19 +425,19 @@
             <c:if test="${user.id != null}">
                 <div class="edit-admin-section">
                     <h2>Edit Admin Account</h2>
-                    <form action="/admin/update-admin" method="post">
+                    <form action="/admin/update-admin" method="post" data-validate>
                         <div class="form-group">
                             <label for="edit-name">Full Name</label>
                             <input type="hidden" name="id" value="${user.id}">
-                            <input type="text" id="edit-name" name="name" value="${user.name}" placeholder="John Doe" required>
+                            <input type="text" id="edit-name" name="name" value="${user.name}" placeholder="John Doe" required data-validate="required">
                         </div>
                         <div class="form-group">
                             <label for="edit-email">Email Address</label>
-                            <input type="email" id="edit-email" name="email" value="${user.email}" placeholder="admin@evalora.com" required>
+                            <input type="email" id="edit-email" name="email" value="${user.email}" placeholder="admin@evalora.com" required data-validate="email">
                         </div>
                         <div class="form-group">
                             <label for="edit-password">New Password <span style="color: #888;">(leave blank to keep current)</span></label>
-                            <input type="password" id="edit-password" name="password" placeholder="••••••••">
+                            <input type="password" id="edit-password" name="password" placeholder="••••••••" data-validate="password" data-optional="true">
                         </div>
                         <div class="form-buttons">
                             <button type="submit">Update Admin</button>
@@ -484,5 +496,6 @@
             </div>
         </div>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

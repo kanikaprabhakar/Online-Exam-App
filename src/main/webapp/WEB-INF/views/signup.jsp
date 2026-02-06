@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Sign Up - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -101,6 +101,18 @@
             font-size: 0.95rem;
         }
 
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
+
         h2 {
             text-align: center;
             margin-bottom: 10px;
@@ -162,35 +174,35 @@
             <div class="error">${error}</div>
         </c:if>
 
-        <form action="/signup" method="post">
+        <form action="/signup" method="post" data-validate>
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" required data-validate="required">
             </div>
             
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" required data-validate="email">
             </div>
             
             <div class="form-group">
                 <label for="rollNumber">Roll Number</label>
-                <input type="text" id="rollNumber" name="rollNumber" required>
+                <input type="text" id="rollNumber" name="rollNumber" required data-validate="roll">
             </div>
             
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="text" id="phone" name="phone" required>
+                <input type="text" id="phone" name="phone" required data-validate="phone">
             </div>
             
             <div class="form-group">
                 <label for="address">Address</label>
-                <input type="text" id="address" name="address" required>
+                <input type="text" id="address" name="address" required data-validate="required">
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required data-validate="password">
             </div>
             
             <button type="submit" class="btn">Create Account</button>
@@ -204,5 +216,6 @@
             <a href="/">Back to Home</a>
         </div>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

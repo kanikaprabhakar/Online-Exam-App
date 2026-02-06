@@ -15,6 +15,8 @@
         button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
         button:hover { background-color: #45a049; }
         .edit-form { background-color: #f9f9f9; }
+        .field-error { color: #b60000; font-size: 0.85rem; margin: 2px 5px 8px 5px; display: none; }
+        .input-error { border-color: #b60000 !important; }
     </style>
 </head>
 <body>
@@ -22,25 +24,25 @@
 
     <!-- Registration Form -->
     <h2>Register New Student</h2>
-    <form action="/students/register" method="post">
-        <input type="text" name="name" placeholder="Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="rollNumber" placeholder="Roll Number" required>
-        <input type="text" name="phone" placeholder="Phone" required>
-        <input type="text" name="address" placeholder="Address" required>
+    <form action="/students/register" method="post" data-validate>
+        <input type="text" name="name" placeholder="Name" required data-validate="required">
+        <input type="email" name="email" placeholder="Email" required data-validate="email">
+        <input type="text" name="rollNumber" placeholder="Roll Number" required data-validate="roll">
+        <input type="text" name="phone" placeholder="Phone" required data-validate="phone">
+        <input type="text" name="address" placeholder="Address" required data-validate="required">
         <button type="submit">Register Student</button>
     </form>
 
     <!-- Edit Form (shows only when editing) -->
     <c:if test="${student.studentId != null}">
         <h2>Edit Student</h2>
-        <form action="/students/update" method="post" class="edit-form">
+        <form action="/students/update" method="post" class="edit-form" data-validate>
             <input type="hidden" name="studentId" value="${student.studentId}">
-            <input type="text" name="name" value="${student.name}" placeholder="Name" required>
-            <input type="email" name="email" value="${student.email}" placeholder="Email" required>
-            <input type="text" name="rollNumber" value="${student.rollNumber}" placeholder="Roll Number" required>
-            <input type="text" name="phone" value="${student.phone}" placeholder="Phone" required>
-            <input type="text" name="address" value="${student.address}" placeholder="Address" required>
+            <input type="text" name="name" value="${student.name}" placeholder="Name" required data-validate="required">
+            <input type="email" name="email" value="${student.email}" placeholder="Email" required data-validate="email">
+            <input type="text" name="rollNumber" value="${student.rollNumber}" placeholder="Roll Number" required data-validate="roll">
+            <input type="text" name="phone" value="${student.phone}" placeholder="Phone" required data-validate="phone">
+            <input type="text" name="address" value="${student.address}" placeholder="Address" required data-validate="required">
             <button type="submit">Update Student</button>
             <a href="/students"><button type="button">Cancel</button></a>
         </form>
@@ -86,5 +88,6 @@
     <a href="/admin">Admin Dashboard</a> | 
     <a href="/questions">Questions</a> | 
     <a href="/exam-attempts">Exam Attempts</a>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

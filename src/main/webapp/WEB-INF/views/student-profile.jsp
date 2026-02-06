@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Student Profile - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -178,6 +178,18 @@
             font-style: italic;
         }
 
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
+
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -220,7 +232,7 @@
             <div class="success">${success}</div>
         </c:if>
 
-        <form action="/student-dashboard/profile/update" method="post">
+        <form action="/student-dashboard/profile/update" method="post" data-validate>
             <div class="form-group">
                 <label for="name">Full Name:</label>
                 <input type="text" id="name" name="name" value="${student.name}" disabled readonly>
@@ -241,12 +253,12 @@
             
             <div class="form-group">
                 <label for="phone">Phone:</label>
-                <input type="text" id="phone" name="phone" value="${student.phone}" required>
+                <input type="text" id="phone" name="phone" value="${student.phone}" required data-validate="phone">
             </div>
             
             <div class="form-group">
                 <label for="address">Address:</label>
-                <input type="text" id="address" name="address" value="${student.address}" required>
+                <input type="text" id="address" name="address" value="${student.address}" required data-validate="required">
             </div>
             
             <div style="text-align: center; margin-top: 30px;">
@@ -255,5 +267,6 @@
             </div>
         </form>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Sign Up - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -101,6 +101,18 @@
             font-size: 0.95rem;
         }
 
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
+
         h2 {
             text-align: center;
             margin-bottom: 10px;
@@ -189,20 +201,20 @@
             <div class="error">${error}</div>
         </c:if>
 
-        <form action="/admin-signup" method="post">
+        <form action="/admin-signup" method="post" data-validate>
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" required data-validate="required">
             </div>
             
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" required data-validate="email">
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required data-validate="password">
             </div>
             
             <div class="form-group">
@@ -210,7 +222,7 @@
                 <div class="admin-code-note">
                     Enter the secret admin registration code provided by your organization administrator.
                 </div>
-                <input type="password" id="adminCode" name="adminCode" required>
+                <input type="password" id="adminCode" name="adminCode" required data-validate="required">
             </div>
             
             <button type="submit" class="btn">Register as Admin</button>
@@ -224,5 +236,6 @@
             <a href="/">Back to Home</a>
         </div>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

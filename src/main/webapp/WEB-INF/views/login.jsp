@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -109,6 +109,18 @@
             font-size: 0.95rem;
         }
 
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
+
         h2 {
             text-align: center;
             margin-bottom: 10px;
@@ -208,15 +220,15 @@
             <div class="success">${success}</div>
         </c:if>
 
-        <form action="/login" method="POST">
+        <form action="/login" method="POST" data-validate>
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required data-validate="email">
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required data-validate="password">
             </div>
             
             <button type="submit" class="btn">Sign In</button>
@@ -234,5 +246,6 @@
             <a href="/">Back to Home</a>
         </div>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>

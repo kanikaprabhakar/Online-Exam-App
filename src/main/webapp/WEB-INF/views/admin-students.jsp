@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Admin - Students Management - Evalora</title>
-    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link rel="icon" type="image/png" href="/document-file.png">
     <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -141,6 +141,19 @@
             color: #888;
         }
 
+        .field-error {
+            color: #ff8888;
+            font-size: 0.85rem;
+            margin: 4px 8px 8px 0;
+            display: none;
+            width: calc(50% - 8px);
+        }
+
+        .input-error {
+            border-color: #b55 !important;
+            box-shadow: 0 0 0 2px rgba(181, 85, 85, 0.15);
+        }
+
         button, .btn {
             padding: 12px 28px;
             background-color: #444;
@@ -227,27 +240,27 @@
 
         <!-- Add Student Form -->
         <h2>Add New Student</h2>
-        <form action="/admin/students/add" method="post">
-            <input type="text" name="name" placeholder="Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="text" name="rollNumber" placeholder="Roll Number" required>
-            <input type="text" name="phone" placeholder="Phone" required>
-            <input type="text" name="address" placeholder="Address" required>
+        <form action="/admin/students/add" method="post" data-validate>
+            <input type="text" name="name" placeholder="Name" required data-validate="required">
+            <input type="email" name="email" placeholder="Email" required data-validate="email">
+            <input type="password" name="password" placeholder="Password" required data-validate="password">
+            <input type="text" name="rollNumber" placeholder="Roll Number" required data-validate="roll">
+            <input type="text" name="phone" placeholder="Phone" required data-validate="phone">
+            <input type="text" name="address" placeholder="Address" required data-validate="required">
             <button type="submit">Add Student</button>
         </form>
 
         <!-- Edit Student Form (shows only when editing) -->
         <c:if test="${student.studentId != null}">
             <h2>Edit Student</h2>
-            <form action="/admin/students/update" method="post" class="edit-form">
+            <form action="/admin/students/update" method="post" class="edit-form" data-validate>
                 <input type="hidden" name="studentId" value="${student.studentId}">
-                <input type="text" name="name" value="${student.name}" placeholder="Name" required>
-                <input type="email" name="email" value="${student.email}" placeholder="Email" required>
-                <input type="password" name="password" placeholder="New Password (leave blank to keep current)">
-                <input type="text" name="rollNumber" value="${student.rollNumber}" placeholder="Roll Number" required>
-                <input type="text" name="phone" value="${student.phone}" placeholder="Phone" required>
-                <input type="text" name="address" value="${student.address}" placeholder="Address" required>
+                <input type="text" name="name" value="${student.name}" placeholder="Name" required data-validate="required">
+                <input type="email" name="email" value="${student.email}" placeholder="Email" required data-validate="email">
+                <input type="password" name="password" placeholder="New Password (leave blank to keep current)" data-validate="password" data-optional="true">
+                <input type="text" name="rollNumber" value="${student.rollNumber}" placeholder="Roll Number" required data-validate="roll">
+                <input type="text" name="phone" value="${student.phone}" placeholder="Phone" required data-validate="phone">
+                <input type="text" name="address" value="${student.address}" placeholder="Address" required data-validate="required">
                 <button type="submit">Update Student</button>
                 <a href="/admin/students"><button type="button">Cancel</button></a>
             </form>
@@ -285,5 +298,6 @@
             </tbody>
         </table>
     </div>
+    <script src="/js/validation.js"></script>
 </body>
 </html>
