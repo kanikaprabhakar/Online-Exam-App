@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Controller
 @RequestMapping("/exam")
@@ -46,30 +48,38 @@ public class ExamController {
 
     // Start exam
     @GetMapping("/start")
-    public String startExam(Authentication auth, Model model, HttpSession session) {
-        // Get exam configuration
-        ExamConfig config = examConfigRepository.getOrCreateConfig();
+    public String startExam(@RequestParam(required = false) Integer examId, Authentication auth, Model model, HttpSession session) {
+        // Get exam configuration - specific exam or first available
+        ExamConfig config;
+        if (examId != null) {
+            config = examConfigRepository.findById(examId).orElse(null);
+            if (config == null) {
+                return "redirect:/student-dashboard?error=Exam+not+found.+Please+contact+administrator.";
+            }
+        } else {
+            config = examConfigRepository.getOrCreateConfig();
+        }
         
         // Check if exam is enabled
         if (!config.isExamEnabled()) {
-            model.addAttribute("error", "Exam is currently disabled. Please contact administrator.");
-            return "student-dashboard";
+            return "redirect:/student-dashboard?error=Exam+is+currently+disabled.+Please+contact+administrator.";
         }
         
         // Get current student
         String currentStudentEmail = auth.getName();
         Student student = studentRepository.findByEmail(currentStudentEmail);
         
-        // Check if student has already taken the exam
-        List<ExamAttempt> existingAttempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(currentStudentEmail);
+        // Check if student has already taken THIS specific exam
+        List<ExamAttempt> existingAttempts = examAttemptRepository.findByStudentEmailAndExamConfigId(currentStudentEmail, config.getId());
         if (!existingAttempts.isEmpty()) {
-            model.addAttribute("error", "You have already taken this exam. You can only take it once.");
-            model.addAttribute("student", student);
-            return "student-dashboard";
+            return "redirect:/student-dashboard?error=You+have+already+taken+this+exam.+Each+student+can+only+take+the+exam+ONCE.+Use+Practice+Mode+to+continue+learning.";
         }
         
         // Mark this as a real exam (not practice)
         session.setAttribute("isPracticeMode", false);
+        
+        // Store current exam ID for submission
+        session.setAttribute("currentExamId", config.getId());
         
         // Add all necessary attributes
         model.addAttribute("student", student);
@@ -262,6 +272,17 @@ public class ExamController {
             attempt.setTotalQuestions(totalQuestions);
             attempt.setPercentage(percentage);
             attempt.setAttemptTime(examStartTime != null ? examStartTime : LocalDateTime.now());
+            
+            // Set exam config information for multi-exam support
+            Integer currentExamId = (Integer) session.getAttribute("currentExamId");
+            if (currentExamId != null) {
+                attempt.setExamConfigId(currentExamId);
+                // Fetch exam config to get title
+                examConfigRepository.findById(currentExamId).ifPresent(config -> {
+                    attempt.setExamTitle(config.getExamTitle());
+                });
+            }
+            
             examAttemptRepository.save(attempt);
         }
         
@@ -271,6 +292,7 @@ public class ExamController {
         session.removeAttribute("currentQuestionIndex");
         session.removeAttribute("examStartTime");
         session.removeAttribute("isPracticeMode");
+        session.removeAttribute("currentExamId");
         
         // Add results to model
         model.addAttribute("student", student);
@@ -297,8 +319,16 @@ public class ExamController {
         
         List<ExamAttempt> attempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(email);
         
+        // Group attempts by exam
+        Map<String, List<ExamAttempt>> attemptsByExam = new LinkedHashMap<>();
+        for (ExamAttempt attempt : attempts) {
+            String examTitle = attempt.getExamTitle() != null ? attempt.getExamTitle() : "Unknown Exam";
+            attemptsByExam.computeIfAbsent(examTitle, k -> new ArrayList<>()).add(attempt);
+        }
+        
         model.addAttribute("student", student);
-        model.addAttribute("attempts", attempts);
+        model.addAttribute("attemptsByExam", attemptsByExam);
+        model.addAttribute("totalAttempts", attempts.size());
         
         return "exam-results-history";
     }

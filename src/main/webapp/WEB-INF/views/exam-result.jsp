@@ -4,113 +4,41 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Exam Results</title>
+    <title>Exam Results - Evalora</title>
+    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #4CAF50;
-        }
-        .result-card {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-        .result-card.failed {
-            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
-            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
-        }
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px auto;
-            border: 3px solid white;
-        }
-        .score-text {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .detail-card {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #4CAF50;
-        }
-        .detail-label {
-            font-weight: bold;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .detail-value {
-            font-size: 18px;
-            color: #333;
-        }
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px;
-        }
-        .btn-primary {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #45a049;
-        }
-        .btn-secondary {
-            background-color: #2196F3;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #0b7dda;
-        }
-        .performance-indicator {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .excellent { color: #4CAF50; }
-        .good { color: #ff9800; }
-        .needs-improvement { color: #f44336; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Aileron', sans-serif; background: #1a1a1a; color: #ddd; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #252525; padding: 40px; border-radius: 8px; border: 1px solid #333; }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #444; }
+        .header h1 { color: #fff; font-weight: 700; }
+        .header p { color: #aaa; margin-top: 10px; }
+        .result-card { background: #223a22; color: #88ff88; padding: 30px; border-radius: 8px; text-align: center; margin: 20px 0; border: 2px solid #446b44; }
+        .result-card.failed { background: #3a2223; color: #ff8888; border-color: #6b4444; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; margin: 20px auto; border: 3px solid currentColor; }
+        .score-text { font-size: 24px; font-weight: bold; }
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0; }
+        .detail-card { background-color: #1f1f1f; padding: 20px; border-radius: 8px; border: 1px solid #444; }
+        .detail-label { font-weight: 600; color: #aaa; margin-bottom: 5px; }
+        .detail-value { font-size: 18px; color: #fff; }
+        .btn { padding: 12px 25px; border: 1px solid #666; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-block; margin: 10px; font-family: 'Aileron', sans-serif; transition: all 0.3s ease; }
+        .btn-primary { background-color: #444; color: white; }
+        .btn-primary:hover { background-color: #555; border-color: #888; }
+        .btn-secondary { background-color: #444; color: white; }
+        .btn-secondary:hover { background-color: #555; border-color: #888; }
+        .performance-indicator { text-align: center; margin: 20px 0; }
+        .performance-indicator h3 { margin-bottom: 10px; }
+        .performance-indicator p { color: #aaa; }
+        .excellent { color: #88ff88; }
+        .good { color: #ffcc88; }
+        .needs-improvement { color: #ff8888; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>${isPractice ? '📝 Practice Completed!' : '🎉 Exam Completed!'}</h1>
+            <h1>${isPractice ? 'Practice Completed' : 'Exam Completed'}</h1>
             <p>
                 <c:choose>
                     <c:when test="${isPractice}">
@@ -136,15 +64,15 @@
         <div class="performance-indicator">
             <c:choose>
                 <c:when test="${percentage >= 80}">
-                    <h3 class="excellent">🌟 Excellent Performance!</h3>
+                    <h3 class="excellent">Excellent Performance</h3>
                     <p>Outstanding work! You have demonstrated a strong understanding of the subject.</p>
                 </c:when>
                 <c:when test="${percentage >= 60}">
-                    <h3 class="good">👍 Good Performance!</h3>
+                    <h3 class="good">Good Performance</h3>
                     <p>Well done! You have a good grasp of the material with room for improvement.</p>
                 </c:when>
                 <c:otherwise>
-                    <h3 class="needs-improvement">📚 Keep Learning!</h3>
+                    <h3 class="needs-improvement">Keep Learning</h3>
                     <p>Don't worry! Review the material and try again. Practice makes perfect!</p>
                 </c:otherwise>
             </c:choose>
@@ -188,10 +116,10 @@
                 <div class="detail-value">
                     <c:choose>
                         <c:when test="${passed}">
-                            <span style="color: #4CAF50; font-weight: bold;">✅ PASSED</span>
+                            <span style="color: #88ff88; font-weight: bold;">PASSED</span>
                         </c:when>
                         <c:otherwise>
-                            <span style="color: #f44336; font-weight: bold;">❌ FAILED</span>
+                            <span style="color: #ff8888; font-weight: bold;">FAILED</span>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -205,10 +133,10 @@
 
         <div style="text-align: center; margin-top: 30px;">
             <c:if test="${isPractice}">
-                <a href="/exam/practice" class="btn btn-secondary">🔄 Practice Again</a>
+                <a href="/exam/practice" class="btn btn-secondary">Practice Again</a>
             </c:if>
-            <a href="/exam/results" class="btn btn-secondary">📊 View All Results</a>
-            <a href="/student-dashboard" class="btn btn-primary">🏠 Back to Dashboard</a>
+            <a href="/exam/results" class="btn btn-secondary">View All Results</a>
+            <a href="/student-dashboard" class="btn btn-primary">Back to Dashboard</a>
         </div>
     </div>
 </body>

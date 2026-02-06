@@ -4,125 +4,158 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>My Exam Results</title>
+    <title>My Exam Results - Evalora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            font-family: 'Aileron', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            color: #ddd;
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #4CAF50;
+            margin-bottom: 40px;
+            animation: slideDown 0.5s ease;
+        }
+        .header h1 {
+            color: #fff;
+            font-weight: 700;
+            font-size: 2.2rem;
         }
         .student-info {
-            background-color: #e8f5e8;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            animation: slideDown 0.5s ease 0.1s backwards;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
+        .student-info h3 { color: #fff; margin-bottom: 12px; font-size: 1.1rem; }
+        .student-info p { color: #bbb; margin-bottom: 6px; }
+        .student-info strong { color: #ddd; }
         table {
             border-collapse: collapse;
             width: 100%;
             margin: 20px 0;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
+            background-color: #252525;
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
         th {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #2a2a2a;
+            color: #fff;
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #444;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        td {
+            padding: 16px;
+            color: #bbb;
+            border-bottom: 1px solid #333;
         }
-        .score-excellent { 
-            background-color: #d4edda; 
-            color: #155724; 
-            font-weight: bold; 
-        }
-        .score-good { 
-            background-color: #fff3cd; 
-            color: #856404; 
-            font-weight: bold; 
-        }
-        .score-needs-improvement { 
-            background-color: #f8d7da; 
-            color: #721c24; 
-            font-weight: bold; 
-        }
+        tr:hover td { background-color: #1f1f1f; color: #ddd; }
+        tr:last-child td { border-bottom: none; }
+        .score-excellent { background-color: rgba(136, 255, 136, 0.15); color: #88ff88; font-weight: 700; }
+        .score-good { background-color: rgba(255, 204, 136, 0.15); color: #ffcc88; font-weight: 700; }
+        .score-needs-improvement { background-color: rgba(255, 136, 136, 0.15); color: #ff8888; font-weight: 700; }
         .btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            padding: 12px 28px;
+            background-color: #444;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
-            border: none;
+            border-radius: 6px;
+            border: 1px solid #666;
             cursor: pointer;
+            font-family: 'Aileron', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
         }
         .btn:hover {
-            background-color: #45a049;
+            background-color: #555;
+            border-color: #888;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
         .btn-secondary {
-            background-color: #2196F3;
+            background-color: #555;
+            border-color: #777;
         }
         .btn-secondary:hover {
-            background-color: #0b7dda;
+            background-color: #666;
+            border-color: #999;
         }
         .no-results {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            border: 1px solid #333;
+            animation: slideDown 0.5s ease 0.1s backwards;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
+        .no-results h3 { color: #fff; font-size: 1.3rem; margin-bottom: 15px; }
+        .no-results p { color: #888; margin-bottom: 25px; }
         .stats-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
-            margin: 20px 0;
+            margin: 30px 0;
         }
         .stat-card {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 25px;
+            border-radius: 12px;
             text-align: center;
-            border-left: 4px solid #4CAF50;
+            border: 1px solid #333;
+            animation: fadeIn 0.6s ease backwards;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4CAF50;
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.15s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.25s; }
+        .stat-card:hover {
+            border-color: #555;
+            transform: translateY(-6px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
         }
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
-        }
+        .stat-number { font-size: 28px; font-weight: 700; color: #88ff88; }
+        .stat-label { color: #aaa; margin-top: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .button-group { text-align: center; margin-top: 40px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        h2 { color: #fff; margin: 30px 0 20px 0; font-weight: 700; font-size: 1.4rem; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 My Exam Results</h1>
-            <a href="/student-dashboard" class="btn btn-secondary">🏠 Back to Dashboard</a>
+            <h1>My Exam Results</h1>
+            <a href="/student-dashboard" class="btn btn-secondary">Back to Dashboard</a>
         </div>
 
         <div class="student-info">
-            <h3>👨‍🎓 ${student.name} (${student.rollNumber})</h3>
+            <h3>${student.name} (${student.rollNumber})</h3>
             <p><strong>Email:</strong> ${student.email}</p>
         </div>
 
@@ -206,10 +239,10 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${attempt.percentage >= 60}">
-                                            <span style="color: #4CAF50; font-weight: bold;">✅ PASSED</span>
+                                            <span style="color: #88ff88; font-weight: bold;">PASSED</span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span style="color: #f44336; font-weight: bold;">❌ FAILED</span>
+                                            <span style="color: #ff8888; font-weight: bold;">FAILED</span>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -220,16 +253,16 @@
             </c:when>
             <c:otherwise>
                 <div class="no-results">
-                    <h3>📝 No Exam Attempts Yet</h3>
+                    <h3>No Exam Attempts Yet</h3>
                     <p>You haven't taken any exams yet. Ready to start your first exam?</p>
-                    <a href="/exam/start" class="btn">🚀 Take Your First Exam</a>
+                    <a href="/exam/start" class="btn">Take Your First Exam</a>
                 </div>
             </c:otherwise>
         </c:choose>
 
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="/exam/start" class="btn">📝 Take New Exam</a>
-            <a href="/student-dashboard" class="btn btn-secondary">🏠 Dashboard</a>
+        <div class="button-group">
+            <a href="/exam/start" class="btn">Take New Exam</a>
+            <a href="/student-dashboard" class="btn btn-secondary">Dashboard</a>
         </div>
     </div>
 </body>

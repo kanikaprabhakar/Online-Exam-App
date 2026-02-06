@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 @Controller
 @RequestMapping("/admin")
@@ -114,12 +115,25 @@ public class AdminMvcController {
         return "admin-profile";
     }
 
+    @GetMapping("/admins")
+    public String manageAdmins(Authentication auth, Model model) {
+        String currentAdminEmail = auth.getName();
+        User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+        
+        model.addAttribute("currentAdmin", currentAdmin);
+        List<User> admins = userRepository.findByRoleIgnoreCase("admin");
+        model.addAttribute("admins", admins);
+        model.addAttribute("user", new User());
+        
+        return "admin-list";
+    }
+
     @PostMapping("/register")
     public String registerAdmin(@ModelAttribute User user) {
         user.setRole("admin");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return "redirect:/admin";
+        return "redirect:/admin/admins";
     }
 
     @GetMapping("/edit-admin/{id}")
@@ -131,7 +145,7 @@ public class AdminMvcController {
         model.addAttribute("user", admin);
         model.addAttribute("admins", userRepository.findByRoleIgnoreCase("admin"));
         model.addAttribute("currentAdmin", currentAdmin);
-        return "admin";
+        return "admin-list";
     }
 
     @PostMapping("/update-admin")
@@ -146,7 +160,7 @@ public class AdminMvcController {
             existingUser.setRole("admin");
             userRepository.save(existingUser);
         }
-        return "redirect:/admin";
+        return "redirect:/admin/admins";
     }
 
     @GetMapping("/delete-admin/{id}")
@@ -155,14 +169,14 @@ public class AdminMvcController {
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
         if (currentAdmin != null && id.equals(currentAdmin.getId())) {
-            return "redirect:/admin?error=cannot-delete-self";
+            return "redirect:/admin/admins?error=cannot-delete-self";
         }
         
         User user = userRepository.findById(id).orElse(null);
         if (user != null && "admin".equalsIgnoreCase(user.getRole())) {
             userRepository.deleteById(id);
         }
-        return "redirect:/admin";
+        return "redirect:/admin/admins";
     }
 
     @GetMapping("/students")
@@ -225,24 +239,28 @@ public class AdminMvcController {
         User currentAdmin = userRepository.findByEmail(currentAdminEmail);
         
         try {
-            // ✅ FIX: Use correct method name and handle empty results
+            // Get all attempts and group by exam
             List<ExamAttempt> allAttempts = examAttemptRepository.findAllByOrderByAttemptTimeDesc();
+            
+            // Group attempts by exam
+            Map<String, List<ExamAttempt>> attemptsByExam = new LinkedHashMap<>();
+            for (ExamAttempt attempt : allAttempts) {
+                String examTitle = attempt.getExamTitle() != null ? attempt.getExamTitle() : "Unknown Exam";
+                attemptsByExam.computeIfAbsent(examTitle, k -> new ArrayList<>()).add(attempt);
+            }
             
             System.out.println("=== EXAM ATTEMPTS DEBUG ===");
             System.out.println("Found attempts: " + allAttempts.size());
-            for (ExamAttempt attempt : allAttempts) {
-                System.out.println("Attempt: " + attempt.getStudentEmail() + 
-                                 " - Score: " + attempt.getScore() + 
-                                 "/" + attempt.getTotalQuestions() + 
-                                 " (" + attempt.getPercentage() + "%)");
-            }
+            System.out.println("Grouped into " + attemptsByExam.size() + " exams");
             
-            model.addAttribute("attempts", allAttempts);
+            model.addAttribute("attemptsByExam", attemptsByExam);
+            model.addAttribute("totalAttempts", allAttempts.size());
             
         } catch (Exception e) {
             System.out.println("Error loading exam attempts: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("attempts", new ArrayList<>());
+            model.addAttribute("attemptsByExam", new LinkedHashMap<>());
+            model.addAttribute("totalAttempts", 0);
             model.addAttribute("error", "Error loading exam attempts: " + e.getMessage());
         }
         
@@ -413,7 +431,11 @@ public class AdminMvcController {
             existingConfig.setExamEnabled(config.getExamEnabled());
             
             examConfigRepository.save(existingConfig);
-            model.addAttribute("success", "Exam configuration updated successfully!");
+            
+            // Clear all exam attempts when exam config is updated to allow students to retake
+            examAttemptRepository.deleteAll();
+            
+            model.addAttribute("success", "Exam configuration updated successfully! All previous exam attempts have been cleared.");
             model.addAttribute("examConfig", existingConfig);
         } catch (Exception e) {
             model.addAttribute("error", "Error updating configuration: " + e.getMessage());
@@ -458,5 +480,123 @@ public class AdminMvcController {
             response.put("message", "Error disabling exam: " + e.getMessage());
         }
         return response;
+    }
+
+    // ========== Multi-Exam Management Routes ==========
+    
+    @GetMapping("/exams")
+    public String listExams(Authentication auth, Model model) {
+        String currentAdminEmail = auth.getName();
+        User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+        
+        List<ExamConfig> allExams = examConfigRepository.findAll();
+        
+        model.addAttribute("currentAdmin", currentAdmin);
+        model.addAttribute("exams", allExams);
+        
+        return "exam-list";
+    }
+    
+    @GetMapping("/exams/create")
+    public String createExamForm(Authentication auth, Model model) {
+        String currentAdminEmail = auth.getName();
+        User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+        Long totalQuestions = questionRepository.count();
+        
+        model.addAttribute("currentAdmin", currentAdmin);
+        model.addAttribute("examConfig", new ExamConfig());
+        model.addAttribute("totalQuestions", totalQuestions);
+        
+        return "exam-create";
+    }
+    
+    @PostMapping("/exams/create")
+    public String createExam(@ModelAttribute ExamConfig config, Authentication auth, Model model) {
+        try {
+            examConfigRepository.save(config);
+            return "redirect:/admin/exams?success=Exam+created+successfully!";
+        } catch (Exception e) {
+            String currentAdminEmail = auth.getName();
+            User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+            Long totalQuestions = questionRepository.count();
+            
+            model.addAttribute("currentAdmin", currentAdmin);
+            model.addAttribute("examConfig", config);
+            model.addAttribute("totalQuestions", totalQuestions);
+            model.addAttribute("error", "Error creating exam: " + e.getMessage());
+            return "exam-create";
+        }
+    }
+    
+    @GetMapping("/exams/edit/{id}")
+    public String editExamForm(@PathVariable Integer id, Authentication auth, Model model) {
+        String currentAdminEmail = auth.getName();
+        User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+        
+        ExamConfig config = examConfigRepository.findById(id).orElse(new ExamConfig());
+        Long totalQuestions = questionRepository.count();
+        
+        model.addAttribute("currentAdmin", currentAdmin);
+        model.addAttribute("examConfig", config);
+        model.addAttribute("totalQuestions", totalQuestions);
+        
+        return "exam-edit";
+    }
+    
+    @PostMapping("/exams/update")
+    public String updateExam(@ModelAttribute ExamConfig config, Authentication auth, Model model) {
+        try {
+            ExamConfig existingConfig = examConfigRepository.findById(config.getId()).orElse(null);
+            
+            if (existingConfig == null) {
+                return "redirect:/admin/exams?error=Exam+not+found!";
+            }
+            
+            existingConfig.setExamTitle(config.getExamTitle());
+            existingConfig.setExamDuration(config.getExamDuration());
+            existingConfig.setTotalMarks(config.getTotalMarks());
+            existingConfig.setPassingMarks(config.getPassingMarks());
+            existingConfig.setQuestionCount(config.getQuestionCount());
+            existingConfig.setNegativeMarking(config.getNegativeMarking());
+            existingConfig.setExamEnabled(config.getExamEnabled());
+            
+            examConfigRepository.save(existingConfig);
+            
+            // Clear only attempts for THIS specific exam
+            List<ExamAttempt> attemptsForThisExam = examAttemptRepository.findAll().stream()
+                .filter(attempt -> attempt.getExamConfigId() != null && attempt.getExamConfigId().equals(config.getId()))
+                .toList();
+            examAttemptRepository.deleteAll(attemptsForThisExam);
+            
+            return "redirect:/admin/exams?success=Exam+updated+successfully!+Attempts+for+this+exam+have+been+cleared.";
+        } catch (Exception e) {
+            String currentAdminEmail = auth.getName();
+            User currentAdmin = userRepository.findByEmail(currentAdminEmail);
+            Long totalQuestions = questionRepository.count();
+            
+            model.addAttribute("currentAdmin", currentAdmin);
+            model.addAttribute("examConfig", config);
+            model.addAttribute("totalQuestions", totalQuestions);
+            model.addAttribute("error", "Error updating exam: " + e.getMessage());
+            return "exam-edit";
+        }
+    }
+    
+    @GetMapping("/exams/delete/{id}")
+    public String deleteExam(@PathVariable Integer id) {
+        try {
+            // Delete all attempts for this exam first
+            List<ExamAttempt> attemptsForThisExam = examAttemptRepository.findAll().stream()
+                .filter(attempt -> attempt.getExamConfigId() != null && attempt.getExamConfigId().equals(id))
+                .toList();
+            examAttemptRepository.deleteAll(attemptsForThisExam);
+            
+            // Then delete the exam config
+            examConfigRepository.deleteById(id);
+            
+            return "redirect:/admin/exams?success=Exam+deleted+successfully!";
+        } catch (Exception e) {
+            return "redirect:/admin/exams?error=Error+deleting+exam:+" + e.getMessage();
+        }
     }
 }

@@ -16,6 +16,9 @@ public interface ExamAttemptRepository extends JpaRepository<ExamAttempt, Long> 
     // ✅ FIX: Find by student email
     List<ExamAttempt> findByStudentEmailOrderByAttemptTimeDesc(String studentEmail);
     
+    // ✅ NEW: Find by student email and exam config id
+    List<ExamAttempt> findByStudentEmailAndExamConfigId(String studentEmail, Integer examConfigId);
+    
     // ✅ ADD: Custom query if needed
     @Query("SELECT e FROM ExamAttempt e ORDER BY e.attemptTime DESC")
     List<ExamAttempt> findAllOrderedByAttemptTime();

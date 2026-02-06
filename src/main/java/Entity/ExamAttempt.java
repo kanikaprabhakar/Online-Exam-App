@@ -26,6 +26,12 @@ public class ExamAttempt {
     @Column(name = "attempt_time")
     private LocalDateTime attemptTime;
     
+    @Column(name = "exam_config_id")
+    private Integer examConfigId;
+    
+    @Column(name = "exam_title")
+    private String examTitle;
+    
     // Constructors
     public ExamAttempt() {}
     
@@ -44,6 +50,8 @@ public class ExamAttempt {
     public Integer getTotalQuestions() { return totalQuestions; }
     public Double getPercentage() { return percentage; }
     public LocalDateTime getAttemptTime() { return attemptTime; }
+    public Integer getExamConfigId() { return examConfigId; }
+    public String getExamTitle() { return examTitle; }
     
     // Setters
     public void setId(Long id) { this.id = id; }
@@ -52,4 +60,6 @@ public class ExamAttempt {
     public void setTotalQuestions(Integer totalQuestions) { this.totalQuestions = totalQuestions; }
     public void setPercentage(Double percentage) { this.percentage = percentage; }
     public void setAttemptTime(LocalDateTime attemptTime) { this.attemptTime = attemptTime; }
+    public void setExamConfigId(Integer examConfigId) { this.examConfigId = examConfigId; }
+    public void setExamTitle(String examTitle) { this.examTitle = examTitle; }
 }

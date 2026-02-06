@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/student-dashboard")
@@ -37,7 +40,9 @@ public class StudentDashboardController {
     private ExamAttemptRepository examAttemptRepository;
 
     @GetMapping("")
-    public String studentDashboard(Authentication auth, Model model, @RequestParam(required = false) String success) {
+    public String studentDashboard(Authentication auth, Model model, 
+                                  @RequestParam(required = false) String success,
+                                  @RequestParam(required = false) String error) {
         String currentStudentEmail = auth.getName();
         User currentUser = userRepository.findByEmail(currentStudentEmail);
         
@@ -55,20 +60,39 @@ public class StudentDashboardController {
             currentStudent.setAddress("N/A");
         }
         
-        // Get exam configuration
-        ExamConfig config = examConfigRepository.getOrCreateConfig();
+        // Get all exam configurations for multi-exam support
+        List<ExamConfig> allExams = examConfigRepository.findAll();
         
-        // Check if student has already taken exam
-        List<ExamAttempt> existingAttempts = examAttemptRepository.findByStudentEmailOrderByAttemptTimeDesc(currentStudentEmail);
-        boolean hasAlreadyTakenExam = !existingAttempts.isEmpty();
+        // Build exam status for each exam
+        List<Map<String, Object>> examStatusList = new ArrayList<>();
+        for (ExamConfig exam : allExams) {
+            Map<String, Object> examStatus = new HashMap<>();
+            examStatus.put("exam", exam);
+            
+            // Check if student has taken this specific exam
+            List<ExamAttempt> attempts = examAttemptRepository.findByStudentEmailAndExamConfigId(
+                currentStudentEmail, exam.getId()
+            );
+            boolean hasTaken = !attempts.isEmpty();
+            examStatus.put("hasTaken", hasTaken);
+            
+            // Determine if exam is available (enabled and not yet taken)
+            boolean isAvailable = exam.isExamEnabled() && !hasTaken;
+            examStatus.put("isAvailable", isAvailable);
+            
+            examStatusList.add(examStatus);
+        }
         
-        model.addAttribute("student", currentStudent); // ✅ Now it's a Student object
-        model.addAttribute("user", currentUser); // ✅ Also add User for other uses
-        model.addAttribute("config", config);
-        model.addAttribute("hasAlreadyTakenExam", hasAlreadyTakenExam);
+        model.addAttribute("student", currentStudent);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("examStatusList", examStatusList);
         
         if (success != null) {
             model.addAttribute("success", success);
+        }
+        
+        if (error != null) {
+            model.addAttribute("error", error);
         }
         
         return "student-dashboard";

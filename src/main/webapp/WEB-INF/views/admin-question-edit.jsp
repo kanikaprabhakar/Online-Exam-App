@@ -5,6 +5,7 @@
 <html>
 <head>
     <title>Edit Question - Admin</title>
+    <link rel="icon" type="image/png" href="/static/document-file.png">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }

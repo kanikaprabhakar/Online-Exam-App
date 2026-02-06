@@ -42,6 +42,8 @@ public class SecurityConfig {
                 // ✅ PUBLIC ENDPOINTS
                 .antMatchers("/", "/home", "/login", "/signup", "/admin-signup").permitAll()
                 .antMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .antMatchers("/*.jpg", "/*.jpeg", "/*.png", "/*.gif", "/*.svg", "/*.ico").permitAll()
+                .antMatchers("/*.css", "/*.js", "/*.html").permitAll()
                 .antMatchers("/api/auth/**").permitAll()  // Login/signup APIs
                 .antMatchers("/api/*/health").permitAll()  // Health checks
                 

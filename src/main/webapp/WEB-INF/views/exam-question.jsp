@@ -5,29 +5,148 @@
 <html>
 <head>
     <title>Question ${currentIndex + 1} - ${config.examTitle}</title>
+    <link rel="icon" type="image/png" href="/static/document-file.png">
+    <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
-        .header { background: #007bff; color: white; padding: 15px 0; position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        .progress-bar { background: #e9ecef; height: 10px; border-radius: 5px; margin: 10px 0; }
-        .progress { background: #28a745; height: 100%; border-radius: 5px; transition: width 0.3s; }
-        .container { max-width: 800px; margin: 80px auto 20px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .question-header { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .question-text { font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.6; }
-        .options { margin: 20px 0; }
-        .option { background: #fff; border: 2px solid #e9ecef; padding: 15px; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .option:hover { border-color: #007bff; background: #f8f9fa; }
-        .option.selected { border-color: #007bff; background: #e7f3ff; }
-        .option-text { font-size: 16px; }
-        .navigation { text-align: center; margin-top: 30px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        .btn-primary { background: #007bff; color: white; }
-        .btn-success { background: #28a745; color: white; }
-        .btn:disabled { background: #6c757d; cursor: not-allowed; }
-        .student-info { font-size: 14px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Aileron', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            color: #ddd;
+            margin: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 2px solid #444;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .student-info { font-size: 14px; color: #ddd; }
+        .timer {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #88ff88;
+        }
+        .progress-bar {
+            background: #1a1a1a;
+            height: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .progress {
+            background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        .container {
+            max-width: 900px;
+            margin: 80px auto 20px;
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .question-header {
+            background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #444;
+        }
+        .question-header h3 { color: #fff; font-weight: 700; margin-bottom: 8px; }
+        .question-header p { color: #888; font-size: 0.9rem; }
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            color: #fff;
+        }
+        .options { margin: 25px 0; }
+        .option {
+            background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+            border: 2px solid #444;
+            padding: 18px 20px;
+            margin: 12px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option:hover {
+            border-color: #5a9fe9;
+            background: linear-gradient(135deg, #2f2f2f 0%, #2a2a2a 100%);
+            transform: translateX(5px);
+        }
+        .option.selected {
+            border-color: #4a90e2;
+            background: linear-gradient(135deg, #1a3a5a 0%, #15314a 100%);
+            box-shadow: 0 5px 20px rgba(74, 144, 226, 0.3);
+        }
+        .option-text {
+            font-size: 16px;
+            color: #ddd;
+        }
+        .option.selected .option-text { color: #fff; font-weight: 600; }
+        .navigation {
+            text-align: center;
+            margin-top: 35px;
+        }
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Aileron', sans-serif;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            border: 1px solid #5a9fe9;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a9fe9 0%, #4682d4 100%);
+            border-color: #6aaff0;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            border: 1px solid #34b75a;
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #34b75a 0%, #28a745 100%);
+            border-color: #4ac76e;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+        }
+        .btn:disabled {
+            background: #555;
+            border-color: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
         .saving { color: #ffc107; font-weight: bold; }
-        .saved { color: #28a745; font-weight: bold; }
-        .error { color: #dc3545; font-weight: bold; }
+        .saved { color: #88ff88; font-weight: bold; }
+        .error { color: #ff8888; font-weight: bold; }
     </style>
 </head>
 <body>
