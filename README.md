@@ -2,6 +2,13 @@
 
 A **Spring Boot application** for managing and taking online exams, with role-based access for admins and students. Features JWT-based authentication, a responsive web interface, and MySQL database.
 
+## 🚀 Live Demo
+
+**Deployed on Railway:** [https://evalora.up.railway.app](https://evalora.up.railway.app)
+
+- **Admin Signup Code:** `ADMIN2024`
+- Test the live application with full exam functionality!
+
 ## Architecture
 
 This application is a monolithic Spring Boot application with:
@@ -90,8 +97,10 @@ This application is a monolithic Spring Boot application with:
    ```
 
 5. **Access the application**
-   - Open browser and go to: http://localhost:8080
-   - Login page: http://localhost:8080/login
+   - **Live Deployment:** https://evalora.up.railway.app
+   - **Local Development:**
+     - Open browser and go to: http://localhost:8080
+     - Login page: http://localhost:8080/login
 
 ## Usage
 
@@ -102,6 +111,17 @@ This application is a monolithic Spring Boot application with:
 4. **Logout**: Use `/logout` - clears authentication cookie
 
 ### Web Interface
+
+**Live Deployment:**
+- **Home**: https://evalora.up.railway.app/
+- **Login**: https://evalora.up.railway.app/login
+- **Student Signup**: https://evalora.up.railway.app/signup  
+- **Admin Signup**: https://evalora.up.railway.app/admin-signup (requires code: `ADMIN2024`)
+- **Admin Dashboard**: https://evalora.up.railway.app/admin
+- **Student Dashboard**: https://evalora.up.railway.app/student-dashboard
+- **Questions Management**: https://evalora.up.railway.app/questions
+
+**Local Development:**
 - **Home**: http://localhost:8080/
 - **Login**: http://localhost:8080/login
 - **Student Signup**: http://localhost:8080/signup  
