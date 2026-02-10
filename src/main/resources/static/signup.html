@@ -100,8 +100,14 @@
                     successMsg.style.display = 'block';
                     setTimeout(() => window.location.href = 'login.html', 2000);
                 } else {
-                    const error = await res.text();
-                    errorMsg.textContent = error || 'Registration failed';
+                    let error = 'Registration failed';
+                    try {
+                        const errorData = await res.json();
+                        error = errorData.error || error;
+                    } catch (e) {
+                        error = await res.text() || error;
+                    }
+                    errorMsg.textContent = error;
                     errorMsg.style.display = 'block';
                 }
             } catch (err) {

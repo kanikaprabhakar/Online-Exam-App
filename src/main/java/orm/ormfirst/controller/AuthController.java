@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,52 +63,49 @@ public class AuthController {
                 
                 return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Invalid email or password");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
             }
         } catch (Exception e) {
             System.out.println("Login error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Login failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestParam String name,
-                        @RequestParam String email,
-                        @RequestParam String password,
-                        @RequestParam String rollNumber,
-                        @RequestParam String phone,
-                        @RequestParam String address,
-                        HttpServletResponse response,
-                        Model model) {
+    public ResponseEntity<?> signup(@RequestBody Map<String, String> signupData) {
+        String email = signupData.get("email");
         
-        // Check if student already exists
         if (studentRepository.findByEmail(email) != null || userRepository.findByEmail(email) != null) {
-            model.addAttribute("error", "Email already exists");
-            return "signup";
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Email already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        // Create new student
         Student student = new Student();
-        student.setName(name);
+        student.setName(signupData.get("name"));
         student.setEmail(email);
-        student.setPassword(passwordEncoder.encode(password));
-        student.setRollNumber(rollNumber);
-        student.setPhone(phone);
-        student.setAddress(address);
+        student.setPassword(passwordEncoder.encode(signupData.get("password")));
+        student.setRollNumber(signupData.get("rollNumber"));
+        student.setPhone(signupData.get("phone"));
+        student.setAddress(signupData.get("address"));
         student.setRole("STUDENT");
 
-        Student savedStudent = studentRepository.save(student);
+        studentRepository.save(student);
         
-        // Auto-login after signup
         String token = jwtUtil.generateToken(email, "STUDENT");
-        Cookie cookie = new Cookie("authToken", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60); // 24 hours
-        response.addCookie(cookie);
         
-        return "redirect:/student-dashboard";
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("role", "STUDENT");
+        response.put("email", email);
+        response.put("message", "Student registered successfully");
+        
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/admin-signup")
@@ -119,7 +113,9 @@ public class AuthController {
         String email = signupData.get("email");
         
         if (studentRepository.findByEmail(email) != null || userRepository.findByEmail(email) != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Email already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         User admin = new User();
@@ -138,6 +134,6 @@ public class AuthController {
         response.put("email", email);
         response.put("message", "Admin registered successfully");
         
-                return ResponseEntity.ok(response);
-            }
-        }
+        return ResponseEntity.ok(response);
+    }
+}

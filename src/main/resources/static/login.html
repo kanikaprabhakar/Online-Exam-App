@@ -99,8 +99,14 @@
                         window.location.href = 'student-dashboard.html';
                     }
                 } else {
-                    const error = await res.text();
-                    errorMsg.textContent = error || 'Invalid email or password';
+                    let error = 'Invalid email or password';
+                    try {
+                        const errorData = await res.json();
+                        error = errorData.error || error;
+                    } catch (e) {
+                        error = await res.text() || error;
+                    }
+                    errorMsg.textContent = error;
                     errorMsg.style.display = 'block';
                 }
             } catch (err) {
