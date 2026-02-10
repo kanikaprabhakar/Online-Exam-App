@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard - Evalora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Aileron:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Aileron', sans-serif; background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%); color: #ddd; padding: 20px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .header h1 { color: #fff; font-weight: 700; font-size: 2.2rem; }
+        .user-controls { display: flex; align-items: center; gap: 15px; }
+        .user-email { color: #888; font-size: 14px; }
+        .logout-btn { padding: 10px 20px; background: #444; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Aileron', sans-serif; font-weight: 600; transition: all 0.3s ease; }
+        .logout-btn:hover { background: #555; }
+        .user-info { background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%); padding: 30px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #333; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
+        .user-info h3 { color: #fff; margin-bottom: 20px; font-weight: 700; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .info-item { padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
+        .info-label { font-weight: 600; color: #aaa; font-size: 13px; text-transform: uppercase; margin-bottom: 5px; }
+        .info-value { color: #ddd; font-weight: 600; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 40px 0; }
+        .feature-card { background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%); padding: 30px; border-radius: 12px; text-align: center; border: 1px solid #333; transition: all 0.35s ease; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); cursor: pointer; }
+        .feature-card:hover { border-color: #555; transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        .feature-card h3 { color: #fff; margin-bottom: 12px; font-size: 1.1rem; font-weight: 700; }
+        .feature-card p { color: #999; font-size: 0.9rem; margin-bottom: 20px; }
+        .btn { padding: 12px 28px; background-color: #444; color: white; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600; transition: all 0.3s ease; border: 1px solid #666; }
+        .btn:hover { background-color: #555; border-color: #888; }
+        .message { padding: 15px; background: #223a22; color: #88ff88; border-radius: 8px; border-left: 3px solid #446b44; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Student Dashboard</h1>
+            <div class="user-controls">
+                <span class="user-email" id="userEmail">Loading...</span>
+                <button class="logout-btn" onclick="Auth.logout()">Logout</button>
+            </div>
+        </div>
+        
+        <div class="message">
+            <strong>Welcome back!</strong> Your learning journey continues here.
+        </div>
+
+        <div class="user-info">
+            <h3>Your Information</h3>
+            <div class="info-grid" id="userInfoGrid">
+                <div class="info-item">
+                    <div class="info-label">Name</div>
+                    <div class="info-value" id="userName">Loading...</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" id="userEmailDisplay">Loading...</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Roll Number</div>
+                    <div class="info-value" id="userRoll">Loading...</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value">Active</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>📝 Take Exam</h3>
+                <p>Start a new exam session and test your knowledge</p>
+                <a href="#" class="btn" onclick="alert('Exam feature coming soon!'); return false;">Start Exam</a>
+            </div>
+            <div class="feature-card">
+                <h3>📊 View Results</h3>
+                <p>Check your past exam results and performance</p>
+                <a href="#" class="btn" onclick="alert('Results feature coming soon!'); return false;">View Results</a>
+            </div>
+            <div class="feature-card">
+                <h3>👤 My Profile</h3>
+                <p>Update your personal information and settings</p>
+                <a href="#" class="btn" onclick="alert('Profile feature coming soon!'); return false;">Edit Profile</a>
+            </div>
+            <div class="feature-card">
+                <h3>📈 My Progress</h3>
+                <p>Track your learning progress and achievements</p>
+                <a href="#" class="btn" onclick="alert('Progress feature coming soon!'); return false;">View Progress</a>
+            </div>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        Auth.requireAuth('STUDENT');
+        
+        const userData = Auth.getUserData();
+        if (userData) {
+            document.getElementById('userEmail').textContent = userData.email;
+            document.getElementById('userEmailDisplay').textContent = userData.email;
+        }
+
+        // Fetch student details from API
+        async function loadStudentInfo() {
+            try {
+                const res = await apiFetch('/api/student/profile');
+                if (res.ok) {
+                    const student = await res.json();
+                    document.getElementById('userName').textContent = student.name || 'N/A';
+                    document.getElementById('userRoll').textContent = student.rollNumber || 'N/A';
+                }
+            } catch (err) {
+                console.error('Failed to load student info:', err);
+                document.getElementById('userName').textContent = 'N/A';
+                document.getElementById('userRoll').textContent = 'N/A';
+            }
+        }
+
+        loadStudentInfo();
+    </script>
+</body>
+</html>

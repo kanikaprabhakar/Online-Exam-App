@@ -5,6 +5,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div style="text-align: right; padding: 10px; background: #252525; margin-bottom: 20px;">
+        <span style="color: #aaa; margin-right: 15px;" id="userEmail"></span>
+        <button onclick="Auth.logout()" style="padding: 8px 16px; background: #444; color: white; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
+    </div>
     <h1>Admin Dashboard</h1>
 
     <!-- Register Admin -->
@@ -55,7 +59,11 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
     <script>
+        Auth.requireAuth('ADMIN');
+        const userData = Auth.getUserData();
+        if (userData) document.getElementById('userEmail').textContent = userData.email;
         // Register Admin
         document.getElementById('registerAdminForm').onsubmit = async function(e) {
             e.preventDefault();

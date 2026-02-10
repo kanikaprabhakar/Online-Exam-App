@@ -5,6 +5,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div style="text-align: right; padding: 10px; background: #252525; margin-bottom: 20px;">
+        <a href="admin-dashboard.html" style="color: #aaa; margin-right: 15px; text-decoration: none;">← Back to Dashboard</a>
+        <button onclick="Auth.logout()" style="padding: 8px 16px; background: #444; color: white; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
+    </div>
     <h1>Set Question Limit</h1>
     <form id="setLimitForm">
         <input name="limit" type="number" placeholder="Question Limit" required>
@@ -19,7 +23,9 @@
     <button onclick="getLimit()">Get Current Limit</button>
     <div id="currentLimit"></div>
     <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
     <script>
+        Auth.requireAuth('ADMIN');
         // Set question limit
         document.getElementById('setLimitForm').onsubmit = async function(e) {
             e.preventDefault();

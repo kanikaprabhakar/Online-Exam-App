@@ -5,6 +5,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div style="text-align: right; padding: 10px; background: #252525; margin-bottom: 20px;">
+        <a href="admin-dashboard.html" style="color: #aaa; margin-right: 15px; text-decoration: none;">← Back to Dashboard</a>
+        <button onclick="Auth.logout()" style="padding: 8px 16px; background: #444; color: white; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
+    </div>
     <h1>Exam Attempts</h1>
     <form id="addExamAttemptForm">
         <input name="studentEmail" placeholder="Student Email" required>
@@ -26,7 +30,9 @@
     <div id="attemptsMsg" style="color:red;margin-top:10px;"></div>
     <ul id="studentAttemptsList"></ul>
     <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
     <script>
+        Auth.requireAuth('ADMIN');
         // Add exam attempt
         document.getElementById('addExamAttemptForm').onsubmit = async function(e) {
             e.preventDefault();
