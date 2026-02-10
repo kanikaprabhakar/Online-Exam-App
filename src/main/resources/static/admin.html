@@ -54,6 +54,7 @@
         <div id="editStudentMsg"></div>
     </div>
 
+    <script src="js/api.js"></script>
     <script>
         // Register Admin
         document.getElementById('registerAdminForm').onsubmit = async function(e) {
@@ -64,7 +65,7 @@
                 password: adminPassword.value,
                 role: "admin"
             };
-            const res = await fetch('/api/admin/users/register-admin', {
+            const res = await apiFetch('/api/admin/users/register-admin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -83,7 +84,7 @@
 
         // Get all admins
         async function getAdmins() {
-            const res = await fetch('/api/admin/users');
+            const res = await apiFetch('/api/admin/users');
             const admins = await res.json();
             const ul = document.getElementById('adminsList');
             ul.innerHTML = '';
@@ -98,7 +99,7 @@
 
         // Show edit admin form
         async function showEditAdmin(id) {
-            const res = await fetch(`/api/admin/users/${id}`);
+            const res = await apiFetch(`/api/admin/users/${id}`);
             if (!res.ok) return;
             const a = await res.json();
             document.getElementById('editAdminId').value = a.id;
@@ -115,7 +116,7 @@
                 name: editAdminName.value,
                 email: editAdminEmail.value
             };
-            const res = await fetch(`/api/admin/users/${id}`, {
+            const res = await apiFetch(`/api/admin/users/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -135,13 +136,13 @@
         // Delete admin
         async function deleteAdmin(id) {
             if (!confirm('Delete this admin?')) return;
-            await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+            await apiFetch(`/api/admin/users/${id}`, { method: 'DELETE' });
             getAdmins();
         }
 
         // Get all students
         async function getStudents() {
-            const res = await fetch('/api/students');
+            const res = await apiFetch('/api/students');
             const students = await res.json();
             const ul = document.getElementById('studentsList');
             ul.innerHTML = '';
@@ -156,7 +157,7 @@
 
         // Show edit student form
         async function showEditStudent(id) {
-            const res = await fetch(`/api/students/${id}`);
+            const res = await apiFetch(`/api/students/${id}`);
             if (!res.ok) return;
             const s = await res.json();
             document.getElementById('editStudentId').value = s.id;
@@ -181,7 +182,7 @@
                 role: "student",
                 password: "" // or fetch the old password if needed
             };
-            const res = await fetch(`/api/students/${id}`, {
+            const res = await apiFetch(`/api/students/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -201,7 +202,7 @@
         // Delete student
         async function deleteStudent(id) {
             if (!confirm('Delete this student?')) return;
-            await fetch(`/api/students/${id}`, { method: 'DELETE' });
+            await apiFetch(`/api/students/${id}`, { method: 'DELETE' });
             getStudents();
         }
 

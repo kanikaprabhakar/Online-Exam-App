@@ -25,6 +25,7 @@
     </form>
     <div id="attemptsMsg" style="color:red;margin-top:10px;"></div>
     <ul id="studentAttemptsList"></ul>
+    <script src="js/api.js"></script>
     <script>
         // Add exam attempt
         document.getElementById('addExamAttemptForm').onsubmit = async function(e) {
@@ -58,7 +59,7 @@
                 attemptTime: form.attemptTime.value
             };
             try {
-                const res = await fetch('/api/exam-attempts', {
+                const res = await apiFetch('/api/exam-attempts', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(body)
@@ -78,7 +79,7 @@
         };
         // Get all exam attempts
         async function getExamAttempts() {
-            const res = await fetch('/api/exam-attempts');
+            const res = await apiFetch('/api/exam-attempts');
             const attempts = await res.json();
             const ul = document.getElementById('attemptsList');
             ul.innerHTML = '';
@@ -103,7 +104,7 @@
                 return;
             }
             try {
-                const res = await fetch(`/api/exam-attempts?email=${encodeURIComponent(email)}`);
+                const res = await apiFetch(`/api/exam-attempts?email=${encodeURIComponent(email)}`);
                 if (!res.ok) {
                     msgDiv.textContent = 'Failed to fetch attempts.';
                     return;
