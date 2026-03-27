@@ -1,0 +1,7 @@
+target/
+.git/
+.gitignore
+.vscode/
+node_modules/
+*.log
+ormfirst.zip
