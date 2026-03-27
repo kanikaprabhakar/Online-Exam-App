@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: online-exam-app
+    env: java
+    plan: free
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/OnlineExamApp2-0.0.1-SNAPSHOT.war
+    envVars:
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_SHOW_SQL
+        value: false
+      - key: JWT_SECRET
+        generateValue: true
